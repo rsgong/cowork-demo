@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<!-- saved from url=(0238)file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MongoDB × AWS — Partnership Deep Dive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="./MongoDB × AWS — Partnership Deep Dive_files/css2" rel="stylesheet">
+  <style>
+    :root {
+      --bg:         #080d14;
+      --bg-2:       #0d1520;
+      --bg-card:    rgba(255,255,255,0.04);
+      --bg-card-hover: rgba(255,255,255,0.07);
+      --border:     rgba(255,255,255,0.08);
+      --border-bright: rgba(255,255,255,0.14);
+      --text-primary:   #f0f4f8;
+      --text-secondary: #8fa3b8;
+      --text-muted:     #4d6275;
+      --mongo-green:   #00ed64;
+      --mongo-green-dim: rgba(0,237,100,0.12);
+      --aws-orange:    #ff9900;
+      --aws-orange-dim: rgba(255,153,0,0.12);
+      --gradient-hero: linear-gradient(135deg, #080d14 0%, #0d1a2e 50%, #091a12 100%);
+      --font-body: 'DM Sans', -apple-system, sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Utility ─────────────────────────────────── */
+    .section { width: 100%; padding: clamp(4rem, 9vh, 7rem) clamp(1.5rem, 5vw, 3rem); }
+    .section-inner { max-width: 900px; margin: 0 auto; }
+    .section-inner--wide { max-width: 1100px; margin: 0 auto; }
+    .label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+    .label--green { color: var(--mongo-green); }
+    .label--orange { color: var(--aws-orange); }
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 0;
+    }
+
+    /* ── Typography ──────────────────────────────── */
+    .h1 { font-size: clamp(2.6rem, 6vw, 4.5rem); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; }
+    .h2 { font-size: clamp(1.8rem, 3.8vw, 2.8rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; }
+    .h3 { font-size: clamp(1.05rem, 1.8vw, 1.25rem); font-weight: 600; line-height: 1.3; }
+    .body-lg { font-size: clamp(1rem, 1.6vw, 1.15rem); color: var(--text-secondary); line-height: 1.75; }
+    .body-sm { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65; }
+
+    /* ── Hero ────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      background: var(--gradient-hero);
+      overflow: hidden;
+      padding: clamp(2rem, 5vh, 4rem) clamp(1.5rem, 5vw, 3rem);
+    }
+
+    /* Ambient glows */
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 60vmax;
+      height: 60vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,237,100,0.06) 0%, transparent 70%);
+      top: -20vmax;
+      left: -15vmax;
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 50vmax;
+      height: 50vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,153,0,0.07) 0%, transparent 70%);
+      bottom: -15vmax;
+      right: -10vmax;
+      pointer-events: none;
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 800px; }
+
+    .lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+    .lockup-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border-bright);
+      border-radius: 100px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+    }
+    .lockup-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .lockup-dot--green { background: var(--mongo-green); box-shadow: 0 0 8px var(--mongo-green); }
+    .lockup-dot--orange { background: var(--aws-orange); box-shadow: 0 0 8px var(--aws-orange); }
+
+    .partner-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-bottom: 2.25rem;
+    }
+    .partner-logo-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 0.6rem 1.1rem;
+    }
+    .partner-logo-box span {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+    .partner-logo-box span.mongo { color: var(--mongo-green); }
+    .partner-logo-box span.aws { color: var(--aws-orange); }
+    .partner-logo-box .icon { font-size: 1.15rem; }
+
+    .times-sign {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    .hero-headline { margin-bottom: 1.5rem; }
+    .hero-headline .green { color: var(--mongo-green); }
+    .hero-headline .orange { color: var(--aws-orange); }
+
+    .hero-sub {
+      max-width: 580px;
+      margin: 0 auto 2.5rem;
+      font-size: clamp(1rem, 1.5vw, 1.1rem);
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--mongo-green);
+      color: #080d14;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-bright);
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.25); transform: translateY(-1px); }
+
+    /* ── Stats bar ───────────────────────────────── */
+    .stats-bar {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-bar .section-inner { display: flex; flex-wrap: wrap; }
+    .stat-item {
+      flex: 1;
+      min-width: 160px;
+      padding: 1.75rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .stat-number.green { color: var(--mongo-green); }
+    .stat-number.orange { color: var(--aws-orange); }
+    .stat-label { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; }
+
+    /* ── Partnership Story ───────────────────────── */
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 3rem;
+    }
+    .story-card {
+      background: var(--bg-2);
+      padding: 2rem 2.25rem;
+      transition: background 0.25s;
+    }
+    .story-card:hover { background: var(--bg-card-hover); }
+    .story-card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .story-card-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      margin-bottom: 0.8rem;
+    }
+    .story-card-tag.green { background: var(--mongo-green-dim); color: var(--mongo-green); }
+    .story-card-tag.orange { background: var(--aws-orange-dim); color: var(--aws-orange); }
+
+    /* ── Integration grid ────────────────────────── */
+    .integration-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+    .integration-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .integration-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+    }
+    .integration-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      margin-bottom: 0.9rem;
+    }
+    .integration-icon.green { background: var(--mongo-green-dim); }
+    .integration-icon.orange { background: var(--aws-orange-dim); }
+    .integration-icon.mixed { background: linear-gradient(135deg, var(--mongo-green-dim), var(--aws-orange-dim)); }
+    .integration-card .h3 { margin-bottom: 0.4rem; }
+    .integration-card .body-sm { font-size: 0.83rem; }
+
+    /* ── Timeline / How it works ─────────────────── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 3rem;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 24px;
+      bottom: 24px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--mongo-green), var(--aws-orange));
+      opacity: 0.3;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 1.75rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 2px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      position: relative;
+      z-index: 1;
+    }
+    .timeline-dot.green { border-color: var(--mongo-green); color: var(--mongo-green); background: rgba(0,237,100,0.08); }
+    .timeline-dot.orange { border-color: var(--aws-orange); color: var(--aws-orange); background: rgba(255,153,0,0.08); }
+    .timeline-dot.mixed { border-color: rgba(255,255,255,0.2); color: var(--text-primary); background: rgba(255,255,255,0.05); }
+    .timeline-content { flex: 1; padding-top: 0.5rem; }
+    .timeline-content .h3 { margin-bottom: 0.35rem; }
+
+    /* ── Impact section ──────────────────────────── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+    .impact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+    .impact-card:hover { border-color: var(--border-bright); }
+    .impact-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .impact-card.green::before { background: linear-gradient(90deg, var(--mongo-green), transparent); }
+    .impact-card.orange::before { background: linear-gradient(90deg, var(--aws-orange), transparent); }
+    .impact-card.mixed::before { background: linear-gradient(90deg, var(--mongo-green), var(--aws-orange)); }
+    .impact-big {
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .impact-big.green { color: var(--mongo-green); }
+    .impact-big.orange { color: var(--aws-orange); }
+    .impact-big.white { color: var(--text-primary); }
+    .impact-card .h3 { margin-bottom: 0.5rem; }
+    .impact-card .body-sm { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+
+    /* ── WorkSpan section ────────────────────────── */
+    .workspan-section {
+      background: linear-gradient(135deg, rgba(0,237,100,0.04) 0%, rgba(255,153,0,0.04) 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .workspan-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .workspan-pillars {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .pillar {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .pillar-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .pillar-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.15rem; }
+    .pillar-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; }
+    .workspan-proof {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+    .workspan-proof .label { margin-bottom: 1rem; }
+    .proof-stat {
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .proof-stat:last-child { border-bottom: none; padding-bottom: 0; }
+    .proof-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .proof-number.green { color: var(--mongo-green); }
+    .proof-number.orange { color: var(--aws-orange); }
+    .proof-desc { font-size: 0.83rem; color: var(--text-secondary); }
+
+    /* ── CTA ─────────────────────────────────────── */
+    .cta-section {
+      text-align: center;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      width: 70vmax;
+      height: 40vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,237,100,0.05) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 1; }
+    .cta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-bright);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: 1.75rem;
+    }
+    .cta-tag .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--mongo-green);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.75); }
+    }
+    .cta-section .h2 { margin-bottom: 1rem; }
+    .cta-section .body-lg { max-width: 520px; margin: 0 auto 2.5rem; }
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Nav ─────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem clamp(1.5rem, 5vw, 3rem);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(8,13,20,0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .nav-brand {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-brand .ws { color: var(--mongo-green); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-cta {
+      font-size: 0.82rem;
+      font-weight: 600;
+      background: var(--mongo-green);
+      color: #080d14;
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── Animations ──────────────────────────────── */
+    .animate-in {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.75s cubic-bezier(0.22,1,0.36,1), transform 0.75s cubic-bezier(0.22,1,0.36,1);
+    }
+    .animate-in.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+    .delay-5 { transition-delay: 0.5s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-in { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 768px) {
+      .story-grid { grid-template-columns: 1fr; }
+      .integration-grid { grid-template-columns: 1fr 1fr; }
+      .impact-grid { grid-template-columns: 1fr; }
+      .workspan-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .stats-bar .section-inner { flex-direction: row; }
+      .stat-item { padding: 1.25rem 1.25rem; border-right: 1px solid var(--border); border-bottom: none; }
+      .timeline::before { display: none; }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 520px) {
+      .integration-grid { grid-template-columns: 1fr; }
+      .stats-bar .section-inner { flex-direction: column; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
+      .partner-logos { flex-direction: column; }
+      .times-sign { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a class="nav-brand" href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#hero">
+      <span class="ws">WorkSpan</span> AI &nbsp;·&nbsp; Partnership Spotlight
+    </a>
+    <ul class="nav-links">
+      <li><a href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#story">The Partnership</a></li>
+      <li><a href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#integrations">Integrations</a></li>
+      <li><a href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#impact">Impact</a></li>
+      <li><a href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#workspan">How WorkSpan Helps</a></li>
+    </ul>
+    <a class="nav-cta" href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#cta">See WorkSpan →</a>
+  </nav>
+
+  <!-- ── Hero ──────────────────────────────────────────── -->
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+
+      <div class="animate-in visible">
+        <div class="lockup">
+          <span class="lockup-badge">
+            <span class="lockup-dot lockup-dot--green"></span>
+            Partnership Spotlight
+          </span>
+        </div>
+      </div>
+
+      <div class="partner-logos animate-in delay-1 visible">
+        <div class="partner-logo-box">
+          <span class="icon">🍃</span>
+          <span class="mongo">MongoDB</span>
+        </div>
+        <span class="times-sign">×</span>
+        <div class="partner-logo-box">
+          <span class="icon">☁️</span>
+          <span class="aws">Amazon Web Services</span>
+        </div>
+      </div>
+
+      <h1 class="h1 hero-headline animate-in delay-2 visible">
+        The database<br>
+        that <span class="green">powers modern apps</span><br>
+        on the <span class="orange">world's leading cloud</span>
+      </h1>
+
+      <p class="hero-sub animate-in delay-3 visible">
+        MongoDB Atlas and AWS have built one of the most deeply integrated ISV partnerships in cloud history — enabling developers and enterprises to build, scale, and innovate faster than ever.
+      </p>
+
+      <div class="hero-cta-row animate-in delay-4 visible">
+        <a href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#story" class="btn-primary">Explore the Partnership →</a>
+        <a href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#workspan" class="btn-secondary">How WorkSpan Powers It</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Stats bar ──────────────────────────────────────── -->
+  <div class="stats-bar">
+    <div class="section-inner">
+      <div class="stat-item animate-in visible">
+        <span class="stat-number green" data-target="25+">25+</span>
+        <span class="stat-label">AWS regions where MongoDB Atlas runs natively</span>
+      </div>
+      <div class="stat-item animate-in delay-1 visible">
+        <span class="stat-number orange" data-target="40%">40%</span>
+        <span class="stat-label">faster procurement via AWS Marketplace vs. direct</span>
+      </div>
+      <div class="stat-item animate-in delay-2 visible">
+        <span class="stat-number green" data-target="47%">47%</span>
+        <span class="stat-label">win rate when AWS co-sell is activated (vs. 22% solo)</span>
+      </div>
+      <div class="stat-item animate-in delay-3 visible">
+        <span class="stat-number orange" data-target="100M+">100+</span>
+        <span class="stat-label">Atlas downloads since launch, many running on AWS</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Partnership Story ──────────────────────────────── -->
+  <section class="section" id="story">
+    <div class="section-inner">
+
+      <p class="label label--green animate-in visible">The Partnership Story</p>
+      <h2 class="h2 animate-in delay-1 visible">From database to cloud-native platform — built together</h2>
+      <p class="body-lg animate-in delay-2 visible" style="margin-top: 1rem;">
+        MongoDB and AWS have co-evolved since the earliest days of cloud computing. What began as a natural fit — a developer-first database on the world's most popular cloud — has matured into one of the deepest, most strategically aligned ISV partnerships in the industry.
+      </p>
+
+      <div class="story-grid animate-in delay-3 visible">
+        <div class="story-card">
+          <span class="story-card-tag green">MongoDB Atlas</span>
+          <div class="story-card-icon">🍃</div>
+          <h3 class="h3" style="margin-bottom: 0.5rem;">The unified data platform</h3>
+          <p class="body-sm">MongoDB Atlas is the developer data platform — combining operational data, vector embeddings, full-text search, and stream processing in a single, consistent experience. On AWS, Atlas runs across 25+ regions, giving teams the global reach to serve customers everywhere while staying close to their compute.</p>
+        </div>
+        <div class="story-card">
+          <span class="story-card-tag orange">Amazon Web Services</span>
+          <div class="story-card-icon">☁️</div>
+          <h3 class="h3" style="margin-bottom: 0.5rem;">The cloud where builders build</h3>
+          <p class="body-sm">AWS powers over 30% of the internet's infrastructure and has invested more than $100B in cloud and AI capacity. As an AWS Advanced Technology Partner and ISV Accelerate member, MongoDB works alongside AWS field teams to co-sell Atlas as the data layer of choice for enterprise AI and application development.</p>
+        </div>
+        <div class="story-card">
+          <span class="story-card-tag green">AWS Marketplace</span>
+          <div class="story-card-icon">🏪</div>
+          <h3 class="h3" style="margin-bottom: 0.5rem;">Transact through committed cloud spend</h3>
+          <p class="body-sm">MongoDB Atlas is available directly on AWS Marketplace, allowing enterprises to purchase Atlas against pre-committed AWS spend (EDP/MACC). This eliminates procurement friction — no separate vendor onboarding, security reviews, or payment negotiations — and helps customers put their committed cloud budget to work faster.</p>
+        </div>
+        <div class="story-card">
+          <span class="story-card-tag orange">Co-Sell Motion</span>
+          <div class="story-card-icon">🤝</div>
+          <h3 class="h3" style="margin-bottom: 0.5rem;">Joint field engagement that wins</h3>
+          <p class="body-sm">Through AWS ISV Accelerate, MongoDB and AWS field teams co-sell together — sharing opportunities, aligning on customers, and driving joint pipeline. Co-sell-enabled ISVs see win rates nearly double: from 22% to 47%. MongoDB's partnership with AWS is a model example of how cloud co-sell, when properly orchestrated, transforms revenue outcomes.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── Integrations ───────────────────────────────────── -->
+  <section class="section" id="integrations">
+    <div class="section-inner--wide">
+
+      <p class="label label--orange animate-in visible">Technical Integration Depth</p>
+      <h2 class="h2 animate-in delay-1 visible">Built into the AWS fabric — not just hosted on it</h2>
+      <p class="body-lg animate-in delay-2 visible" style="margin-top: 1rem; max-width: 680px;">
+        MongoDB Atlas isn't simply deployed on AWS infrastructure — it's deeply wired into the AWS service ecosystem, enabling builders to compose sophisticated applications without leaving their cloud-native toolchain.
+      </p>
+
+      <div class="integration-grid">
+
+        <div class="integration-card animate-in visible">
+          <div class="integration-icon orange">🔒</div>
+          <h3 class="h3">AWS PrivateLink</h3>
+          <p class="body-sm">Private, dedicated network connectivity between Atlas clusters and AWS VPCs — no public internet exposure, no complex peering rules. Enterprise-grade isolation that satisfies the most demanding security and compliance requirements.</p>
+        </div>
+
+        <div class="integration-card animate-in delay-1 visible">
+          <div class="integration-icon green">⚡</div>
+          <h3 class="h3">AWS Lambda Triggers</h3>
+          <p class="body-sm">Atlas Database Triggers fire Lambda functions in response to real-time database events — inserts, updates, deletes. Build event-driven architectures where data changes automatically activate downstream processing, notifications, or analytics pipelines.</p>
+        </div>
+
+        <div class="integration-card animate-in delay-2 visible">
+          <div class="integration-icon orange">🔄</div>
+          <h3 class="h3">Amazon EventBridge</h3>
+          <p class="body-sm">Publish MongoDB Atlas events directly to EventBridge, connecting database changes to a serverless event bus that fans out to dozens of AWS services. Decouple your data layer from application logic and scale each component independently.</p>
+        </div>
+
+        <div class="integration-card animate-in delay-3 visible">
+          <div class="integration-icon mixed">🤖</div>
+          <h3 class="h3">Amazon Bedrock + Vector Search</h3>
+          <p class="body-sm">Atlas Vector Search stores and retrieves embeddings generated by Amazon Bedrock foundation models, enabling production-ready RAG (Retrieval-Augmented Generation) applications. Build semantic search, recommendation engines, and AI copilots directly on your operational data.</p>
+        </div>
+
+        <div class="integration-card animate-in delay-1 visible">
+          <div class="integration-icon orange">🧠</div>
+          <h3 class="h3">Amazon SageMaker</h3>
+          <p class="body-sm">Feed operational MongoDB data directly into SageMaker training pipelines and inference endpoints. Keep ML models in sync with fresh production data without complex ETL layers, and write predictions back to Atlas for real-time application consumption.</p>
+        </div>
+
+        <div class="integration-card animate-in delay-2 visible">
+          <div class="integration-icon green">🔧</div>
+          <h3 class="h3">AWS CloudFormation</h3>
+          <p class="body-sm">Provision and manage MongoDB Atlas clusters as infrastructure-as-code alongside your AWS resources. One CloudFormation template defines your entire stack — EC2, Lambda, API Gateway, and Atlas — enabling repeatable, version-controlled deployments at every scale.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── How it works for customers ───────────────────────── -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="label animate-in visible">Customer Journey</p>
+      <h2 class="h2 animate-in delay-1 visible">From first line of code to global scale</h2>
+      <p class="body-lg animate-in delay-2 visible" style="margin-top: 1rem;">
+        The MongoDB × AWS partnership is designed around developer velocity and enterprise confidence — meeting teams at every stage of their journey.
+      </p>
+
+      <div class="timeline animate-in delay-3">
+        <div class="timeline-item">
+          <div class="timeline-dot green">01</div>
+          <div class="timeline-content">
+            <h3 class="h3">Start free, scale instantly</h3>
+            <p class="body-sm">Developers spin up a free MongoDB Atlas cluster on AWS in under three minutes. Atlas handles provisioning, replication, backups, and patching — teams write application code, not infrastructure config. When traffic spikes, Atlas scales horizontally without downtime.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot orange">02</div>
+          <div class="timeline-content">
+            <h3 class="h3">Transact through AWS Marketplace</h3>
+            <p class="body-sm">When teams are ready to commit, they purchase MongoDB Atlas directly on AWS Marketplace, applying pre-committed EDP or MACC spend. Finance teams are happy — the spend hits the cloud line item. Procurement takes days, not months. Deals close 40% faster than traditional direct procurement.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot mixed">03</div>
+          <div class="timeline-content">
+            <h3 class="h3">Activate co-sell for enterprise</h3>
+            <p class="body-sm">For enterprise accounts, MongoDB and AWS field teams engage jointly — bringing solution architects, co-sell credits, and shared customer success resources. ISVs co-selling with AWS see win rates jump from 22% to 47%. The AWS relationship provides enterprise customers the assurance of a supported, validated deployment.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot green">04</div>
+          <div class="timeline-content">
+            <h3 class="h3">Build AI applications on a unified data layer</h3>
+            <p class="body-sm">With Atlas Vector Search and deep integrations into Amazon Bedrock and SageMaker, teams add AI capabilities directly on top of their existing operational data. No separate vector database, no data duplication — semantic search, RAG applications, and real-time recommendations all run from the same Atlas cluster that powers the core application.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot orange">05</div>
+          <div class="timeline-content">
+            <h3 class="h3">Go global across 25+ AWS regions</h3>
+            <p class="body-sm">Atlas Global Clusters distribute data across AWS regions with configurable zone sharding — serving users from the region closest to them while meeting data residency requirements. MongoDB's global footprint on AWS gives enterprises the reach to build truly worldwide applications from day one.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── Impact ─────────────────────────────────────────── -->
+  <section class="section" id="impact" style="background: var(--bg-2);">
+    <div class="section-inner">
+
+      <p class="label label--green animate-in">Partnership Impact</p>
+      <h2 class="h2 animate-in delay-1">What a best-in-class ISV partnership delivers</h2>
+      <p class="body-lg animate-in delay-2" style="margin-top: 1rem;">
+        The MongoDB × AWS partnership is a model for what cloud ISV partnerships can achieve when co-sell, marketplace, and technical integration are orchestrated together.
+      </p>
+
+      <div class="impact-grid animate-in delay-3">
+
+        <div class="impact-card green">
+          <div class="impact-big green">47%</div>
+          <h3 class="h3">AWS Co-Sell Win Rate</h3>
+          <p class="body-sm">ISVs that activate AWS field sellers in co-sell motions see win rates nearly double — from 22% to 47%. MongoDB's ISV Accelerate participation means joint pipeline gets AWS co-sell support, credentials, and customer trust built in.</p>
+        </div>
+
+        <div class="impact-card orange">
+          <div class="impact-big orange">40%</div>
+          <h3 class="h3">Faster Deal Closure via Marketplace</h3>
+          <p class="body-sm">By routing transactions through AWS Marketplace, MongoDB Atlas purchases bypass standard enterprise procurement friction — vendor onboarding, security reviews, payment negotiations. Pre-committed spend means deals that once took quarters close in weeks.</p>
+        </div>
+
+        <div class="impact-card mixed">
+          <div class="impact-big green">25+</div>
+          <h3 class="h3">Global AWS Regions</h3>
+          <p class="body-sm">MongoDB Atlas runs across 25+ AWS regions with Global Clusters supporting zone-based data distribution for low latency and data residency compliance. Customers build globally without managing multi-region infrastructure themselves.</p>
+        </div>
+
+        <div class="impact-card orange">
+          <div class="impact-big white">$100B+</div>
+          <h3 class="h3">AWS Cloud Investment Wave</h3>
+          <p class="body-sm">AWS has invested over $100B in quarterly cloud and AI capacity. MongoDB Atlas is positioned as the developer data platform for the AI era — capturing demand from the explosion of AI workloads being built on AWS infrastructure with Bedrock, SageMaker, and EC2 GPU instances.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── WorkSpan section ───────────────────────────────── -->
+  <section class="section workspan-section" id="workspan">
+    <div class="section-inner--wide">
+      <div class="workspan-inner">
+
+        <div>
+          <p class="label label--green animate-in">Powered by WorkSpan AI</p>
+          <h2 class="h2 animate-in delay-1">Running a partnership like this takes more than a great product</h2>
+          <p class="body-lg animate-in delay-2" style="margin-top: 1rem;">
+            The MongoDB × AWS partnership is exceptional — but behind every co-sell referral, every marketplace transaction, and every joint win, there's operational machinery that has to run perfectly. That's what WorkSpan AI is built for.
+          </p>
+
+          <div class="workspan-pillars animate-in delay-3">
+            <div class="pillar">
+              <span class="pillar-icon">⚙️</span>
+              <div>
+                <div class="pillar-title">Process Automation</div>
+                <div class="pillar-desc">Automate co-sell referrals, ACE submissions, CPPO workflows, and marketplace private offers directly from your CRM — no manual portal work, no missed submissions.</div>
+              </div>
+            </div>
+            <div class="pillar">
+              <span class="pillar-icon">🧭</span>
+              <div>
+                <div class="pillar-title">Seller Activation</div>
+                <div class="pillar-desc">Coach reps on when and how to engage AWS in every deal — surfacing partnership guidance, co-sell credits, and partner actions inside Salesforce where sellers already work.</div>
+              </div>
+            </div>
+            <div class="pillar">
+              <span class="pillar-icon">📊</span>
+              <div>
+                <div class="pillar-title">Partner Attribution</div>
+                <div class="pillar-desc">Prove exactly which deals your AWS partnership influenced, co-sold, or sourced — with auditable attribution that answers CFO-level ROI questions and justifies continued investment.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workspan-proof animate-in delay-2">
+          <p class="label">WorkSpan AI in the Field</p>
+
+          <div class="proof-stat">
+            <span class="proof-number orange">30×</span>
+            <span class="proof-desc">AWS Marketplace revenue growth at Boomi after deploying WorkSpan AI — with 101% YoY co-sell ACV growth and 31% higher NRR through marketplace deals</span>
+          </div>
+
+          <div class="proof-stat">
+            <span class="proof-number green">$262M</span>
+            <span class="proof-desc">Partner-influenced impact delivered by Deloitte in 6 months, scaling AWS co-sell across 25+ global cloud alliances with WorkSpan AI</span>
+          </div>
+
+          <div class="proof-stat">
+            <span class="proof-number orange">2,000+</span>
+            <span class="proof-desc">Referrals auto-created by Capgemini across AWS and Microsoft in six months — 100% automated, zero manual portal submissions</span>
+          </div>
+
+          <div class="proof-stat">
+            <span class="proof-number green">317%</span>
+            <span class="proof-desc">ARR growth on WorkSpan AI platform in FY26 — with 300% Net Dollar Retention on AI products</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── CTA ───────────────────────────────────────────── -->
+  <section class="section cta-section" id="cta">
+    <div class="section-inner cta-inner" style="text-align: center;">
+
+      <div class="cta-tag animate-in">
+        <span class="dot"></span>
+        WorkSpan AI · Partner Revenue Platform
+      </div>
+
+      <h2 class="h2 animate-in delay-1">
+        Ready to run your AWS partnership<br>like MongoDB does?
+      </h2>
+
+      <p class="body-lg animate-in delay-2">
+        WorkSpan AI automates the co-sell, marketplace, and attribution operations that turn a good AWS partnership into a great one — so your team focuses on relationships, not referral portals.
+      </p>
+
+      <div class="cta-buttons animate-in delay-3">
+        <a href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#" class="btn-primary">Book a Demo →</a>
+        <a href="file:///Users/samgong/Library/Application%20Support/Claude/local-agent-mode-sessions/ea950415-877e-4636-a53a-f47bf248f8a3/0b351180-ca4d-4962-b9a5-4e42ce899bd2/local_7617a77b-d9a1-4c2a-948b-1f5c37bd27d9/outputs/mongodb-aws-partnership.html#" class="btn-secondary">See the Platform</a>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    // Scroll-triggered animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+    // Counter animation for stats
+    function animateCounter(el) {
+      const target = el.dataset.target;
+      const isPercent = target.includes('%');
+      const isMultiplier = target.includes('×');
+      const isPlus = target.includes('+');
+      const num = parseFloat(target.replace(/[^0-9.]/g, ''));
+      const duration = 1400;
+      const start = performance.now();
+      const suffix = isPercent ? '%' : isMultiplier ? '×' : isPlus ? '+' : '';
+
+      (function tick(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * num * 10) / 10;
+        el.textContent = (current % 1 === 0 ? current.toFixed(0) : current.toFixed(1)) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      })(start);
+    }
+
+    // Observe stat numbers
+    const statObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          statObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-number').forEach(el => {
+      el.dataset.target = el.textContent;
+      el.textContent = '—';
+      statObserver.observe(el);
+    });
+
+    // Smooth anchor scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+
+
+
+</body></html>
