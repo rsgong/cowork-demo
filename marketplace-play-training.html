@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Listing to Motion — Marketplace Adoption Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080d1a; --surface: #0f1628; --card: #162035; --card-hover: #1c2a45;
+  --border: #1e2e50; --border-mid: #243a63;
+  --blue: #4d8ef5; --blue-glow: rgba(77,142,245,0.12);
+  --teal: #00c9a0; --teal-glow: rgba(0,201,160,0.12);
+  --yellow: #f59e0b; --red: #f04444;
+  --text: #e8eeff; --text-muted: #7a92c0; --text-dim: #3d5585;
+  --radius: 12px; --radius-lg: 20px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,sans-serif; font-size:16px; line-height:1.7; min-height:100vh; }
+
+/* ─── ROLE GATE ─────────────────────────────────────── */
+#role-gate {
+  position:fixed; inset:0; background:var(--bg); z-index:1000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem;
+  transition:opacity .5s, visibility .5s;
+}
+#role-gate.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+.gate-eyebrow { font-size:.72rem; font-weight:700; letter-spacing:.15em; color:var(--blue); text-transform:uppercase; margin-bottom:1.5rem; }
+.gate-title { font-size:clamp(2rem,5vw,3.2rem); font-weight:800; text-align:center; line-height:1.15; margin-bottom:.75rem; }
+.gate-title span { background:linear-gradient(90deg,var(--blue),var(--teal)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.gate-sub { color:var(--text-muted); text-align:center; margin-bottom:3rem; max-width:460px; font-size:1.05rem; }
+.role-cards { display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; }
+.role-card {
+  background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius-lg);
+  padding:2rem 2.5rem; text-align:center; cursor:pointer;
+  transition:all .25s; min-width:200px; color:var(--text); text-decoration:none; display:block;
+}
+.role-card:hover { background:var(--card-hover); border-color:var(--blue); transform:translateY(-5px); box-shadow:0 16px 48px var(--blue-glow); }
+.role-icon { font-size:2.75rem; margin-bottom:.75rem; display:block; }
+.role-label { font-size:1.15rem; font-weight:700; margin-bottom:.3rem; }
+.role-desc { font-size:.82rem; color:var(--text-muted); }
+
+/* ─── PROGRESS HEADER ────────────────────────────────── */
+#progress-header {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(8,13,26,.95); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border); padding:.7rem 1.5rem;
+  display:flex; align-items:center; gap:1rem;
+}
+.progress-logo { font-size:.82rem; font-weight:700; color:var(--blue); white-space:nowrap; }
+.progress-bar-wrap { flex:1; height:3px; background:var(--card); border-radius:99px; overflow:hidden; }
+.progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--blue),var(--teal)); width:0%; transition:width .4s ease; }
+.progress-label { font-size:.72rem; color:var(--text-muted); white-space:nowrap; display:none; }
+.role-badge { font-size:.68rem; font-weight:700; padding:.18rem .55rem; border-radius:99px; text-transform:uppercase; letter-spacing:.05em; display:none; }
+.bdr-badge { background:rgba(77,142,245,.12); color:var(--blue); }
+.ae-badge { background:rgba(0,201,160,.12); color:var(--teal); }
+body.role-bdr .bdr-badge, body.role-ae .ae-badge { display:block; }
+body.role-bdr .progress-label, body.role-ae .progress-label { display:block; }
+
+/* ─── MAIN LAYOUT ────────────────────────────────────── */
+main { padding-top:58px; }
+.section { padding:5.5rem 1.5rem; max-width:760px; margin:0 auto; }
+.section + .section { border-top:1px solid var(--border); }
+.anchor { scroll-margin-top:78px; }
+
+/* ─── TYPE SYSTEM ────────────────────────────────────── */
+.eyebrow {
+  font-size:.7rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--blue); margin-bottom:1rem; display:flex; align-items:center; gap:.6rem;
+}
+.eyebrow::before { content:''; display:block; width:18px; height:2px; background:var(--blue); flex-shrink:0; }
+.eyebrow.teal { color:var(--teal); }
+.eyebrow.teal::before { background:var(--teal); }
+.eyebrow.yellow { color:var(--yellow); }
+.eyebrow.yellow::before { background:var(--yellow); }
+h2 { font-size:clamp(1.6rem,4vw,2.4rem); font-weight:800; line-height:1.2; margin-bottom:1.5rem; }
+h2 em { font-style:normal; color:var(--teal); }
+h3 { font-size:1.05rem; font-weight:700; margin-bottom:.5rem; }
+.body-text { color:var(--text-muted); font-size:1.02rem; line-height:1.85; }
+.body-text p + p { margin-top:1.2rem; }
+.body-text strong { color:var(--text); font-weight:600; }
+
+/* ─── STORY BLOCK ────────────────────────────────────── */
+.story-block {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:2rem 2.5rem 1.75rem; margin:2rem 0; position:relative;
+}
+.story-block::before {
+  content:'"'; font-size:7rem; font-weight:800; color:var(--border); position:absolute;
+  top:-.75rem; left:1.5rem; line-height:1; font-family:Georgia,serif; pointer-events:none;
+}
+.story-text { font-size:1.05rem; line-height:1.9; color:var(--text); padding-top:.5rem; }
+.story-text strong { color:var(--teal); font-weight:600; }
+.story-text em { color:var(--text-muted); font-style:italic; }
+
+/* ─── CALLOUTS ───────────────────────────────────────── */
+.callout {
+  background:linear-gradient(135deg,rgba(77,142,245,.07),rgba(0,201,160,.04));
+  border:1px solid rgba(77,142,245,.22); border-radius:var(--radius);
+  padding:1.5rem 1.75rem; margin:2rem 0;
+}
+.callout.teal { background:linear-gradient(135deg,rgba(0,201,160,.08),rgba(77,142,245,.04)); border-color:rgba(0,201,160,.22); }
+.callout.yellow { background:linear-gradient(135deg,rgba(245,158,11,.07),rgba(77,142,245,.03)); border-color:rgba(245,158,11,.22); }
+.callout-label { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--blue); margin-bottom:.5rem; }
+.callout.teal .callout-label { color:var(--teal); }
+.callout.yellow .callout-label { color:var(--yellow); }
+.callout-text { font-size:1rem; color:var(--text); font-weight:500; line-height:1.6; }
+.callout-text em { color:var(--text-muted); font-style:normal; font-size:.9rem; }
+
+/* ─── STATS ──────────────────────────────────────────── */
+.stat-row { display:flex; gap:.875rem; flex-wrap:wrap; margin:2rem 0; }
+.stat-pill { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem 1.5rem; text-align:center; flex:1; min-width:140px; }
+.stat-number { font-size:1.9rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:.35rem; }
+.stat-label { font-size:.78rem; color:var(--text-muted); line-height:1.4; }
+
+/* ─── COMPARISON ─────────────────────────────────────── */
+.comparison { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:2rem 0; }
+@media(max-width:580px){ .comparison{grid-template-columns:1fr;} }
+.compare-col { background:var(--card); border-radius:var(--radius); padding:1.5rem; border:1px solid var(--border); }
+.compare-col.dead { border-top:3px solid var(--red); }
+.compare-col.live { border-top:3px solid var(--teal); }
+.compare-head { font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin-bottom:1rem; }
+.compare-col.dead .compare-head { color:var(--red); }
+.compare-col.live .compare-head { color:var(--teal); }
+.compare-list { list-style:none; display:flex; flex-direction:column; gap:.6rem; }
+.compare-list li { font-size:.9rem; color:var(--text-muted); display:flex; gap:.5rem; align-items:flex-start; line-height:1.5; }
+.compare-col.dead .compare-list li::before { content:'✗'; color:var(--red); font-weight:700; flex-shrink:0; margin-top:.05rem; }
+.compare-col.live .compare-list li::before { content:'✓'; color:var(--teal); font-weight:700; flex-shrink:0; margin-top:.05rem; }
+
+/* ─── ROLE FORK ──────────────────────────────────────── */
+.bdr-only, .ae-only { display:none; }
+body.role-bdr .bdr-only { display:block; }
+body.role-ae .ae-only { display:block; }
+
+/* ─── STEP CARDS ─────────────────────────────────────── */
+.step-list { display:flex; flex-direction:column; gap:.875rem; margin:2rem 0; }
+.step-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.4rem 1.6rem; display:flex; gap:1.2rem; align-items:flex-start; transition:border-color .2s; }
+.step-card:hover { border-color:var(--blue); }
+.step-num { width:30px; height:30px; min-width:30px; background:var(--blue-glow); border:1.5px solid var(--blue); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:700; color:var(--blue); margin-top:.1rem; }
+.step-title { font-size:.95rem; font-weight:700; color:var(--text); margin-bottom:.3rem; }
+.step-desc { font-size:.88rem; color:var(--text-muted); line-height:1.65; }
+.step-desc strong { color:var(--text); font-weight:600; }
+
+/* ─── SCRIPT BLOCKS ──────────────────────────────────── */
+.script-wrap { margin:1.25rem 0; }
+.script-label { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.4rem; }
+.script-block { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--blue); border-radius:0 var(--radius) var(--radius) 0; padding:1.1rem 1.4rem; font-size:.95rem; color:var(--text); line-height:1.75; }
+.script-block em { color:var(--text-muted); font-style:italic; }
+
+/* ─── EXPANDABLES ────────────────────────────────────── */
+details { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin:.875rem 0; overflow:hidden; transition:border-color .2s; }
+details:hover { border-color:var(--border-mid); }
+details[open] { border-color:var(--blue); }
+details summary { cursor:pointer; padding:.9rem 1.2rem; font-size:.88rem; font-weight:600; color:var(--text-muted); list-style:none; display:flex; align-items:center; gap:.6rem; user-select:none; }
+details summary::before { content:'▶'; font-size:.58rem; transition:transform .2s; color:var(--text-dim); flex-shrink:0; }
+details[open] summary::before { transform:rotate(90deg); color:var(--blue); }
+details[open] summary { color:var(--text); }
+details summary::-webkit-details-marker { display:none; }
+.details-body { padding:0 1.2rem 1.2rem; font-size:.9rem; color:var(--text-muted); line-height:1.75; border-top:1px solid var(--border); padding-top:1rem; }
+.details-body p + p { margin-top:.75rem; }
+.details-body strong { color:var(--text); font-weight:600; }
+.details-body ul { margin:.5rem 0 .5rem 1.2rem; }
+.details-body ul li { margin-bottom:.3rem; }
+
+/* ─── PERSONA CARD ───────────────────────────────────── */
+.persona-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin:1rem 0; }
+.persona-name { font-weight:700; font-size:1rem; color:var(--text); margin-bottom:.15rem; }
+.persona-titles { font-size:.78rem; color:var(--text-dim); margin-bottom:1rem; }
+.pain-item { display:flex; gap:.6rem; align-items:flex-start; margin-bottom:.4rem; font-size:.88rem; color:var(--text-muted); line-height:1.5; }
+.pain-dot { width:16px; height:16px; min-width:16px; background:rgba(245,158,11,.1); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:700; color:var(--yellow); margin-top:.15rem; }
+
+/* ─── CHECKPOINT ─────────────────────────────────────── */
+.checkpoint-card { background:var(--card); border:1.5px solid var(--blue); border-radius:var(--radius-lg); padding:2rem; margin:2.5rem 0; }
+.checkpoint-label { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--blue); margin-bottom:.75rem; display:flex; align-items:center; gap:.4rem; }
+.checkpoint-label::before { content:'◆'; font-size:.5rem; }
+.checkpoint-prompt { font-size:1rem; font-weight:600; color:var(--text); margin-bottom:1.25rem; line-height:1.5; }
+.checkpoint-textarea { width:100%; min-height:95px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:.9rem 1rem; color:var(--text); font-family:'Inter',sans-serif; font-size:.95rem; line-height:1.6; resize:vertical; transition:border-color .2s; outline:none; }
+.checkpoint-textarea:focus { border-color:var(--blue); }
+.checkpoint-textarea::placeholder { color:var(--text-dim); }
+.checkpoint-submit { margin-top:.75rem; padding:.6rem 1.5rem; background:var(--blue); color:#fff; border:none; border-radius:8px; font-family:'Inter',sans-serif; font-size:.88rem; font-weight:600; cursor:pointer; transition:opacity .2s, transform .1s; }
+.checkpoint-submit:hover { opacity:.9; transform:translateY(-1px); }
+.checkpoint-response { margin-top:1.25rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; display:none; }
+.checkpoint-response.visible { display:block; animation:fadeIn .4s ease; }
+.coach-label { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:.75rem; display:flex; align-items:center; gap:.4rem; }
+.coach-label::before { content:'◆'; font-size:.5rem; }
+.coach-text { font-size:.93rem; color:var(--text-muted); line-height:1.75; }
+.coach-text strong { color:var(--text); font-weight:600; }
+.coach-text .hl { color:var(--teal); }
+
+/* ─── ROLEPLAY ───────────────────────────────────────── */
+.scenario-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.5rem; }
+.scenario-label { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--yellow); margin-bottom:.75rem; }
+.scenario-text { font-size:.93rem; color:var(--text-muted); line-height:1.7; margin-bottom:1rem; }
+.prospect-says { background:var(--surface); border-left:3px solid var(--yellow); border-radius:0 var(--radius) var(--radius) 0; padding:1rem 1.25rem; margin:.75rem 0; font-style:italic; color:var(--text); font-size:.98rem; line-height:1.65; }
+
+/* ─── PROOF ──────────────────────────────────────────── */
+.proof-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.75rem 0; }
+@media(max-width:560px){ .proof-row{grid-template-columns:1fr;} }
+.proof-block { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.4rem 1.5rem; }
+.proof-company { font-size:.72rem; font-weight:700; letter-spacing:.05em; color:var(--text-dim); text-transform:uppercase; margin-bottom:.4rem; }
+.proof-stat { font-size:1.4rem; font-weight:800; color:var(--teal); margin-bottom:.15rem; line-height:1; }
+.proof-context { font-size:.82rem; color:var(--text-muted); line-height:1.5; }
+
+/* ─── GRADUATION ─────────────────────────────────────── */
+.grad-card { background:linear-gradient(135deg,rgba(0,201,160,.07),rgba(77,142,245,.05)); border:1px solid rgba(0,201,160,.18); border-radius:var(--radius-lg); padding:2.5rem; text-align:center; margin:2rem 0; }
+.grad-icon { font-size:3rem; margin-bottom:1rem; display:block; }
+.grad-title { font-size:1.5rem; font-weight:800; margin-bottom:.75rem; }
+.grad-text { color:var(--text-muted); font-size:.95rem; }
+.action-list { list-style:none; text-align:left; margin:1.75rem 0 0; display:flex; flex-direction:column; gap:.875rem; }
+.action-list li { display:flex; gap:.75rem; font-size:.95rem; color:var(--text); align-items:flex-start; line-height:1.55; }
+.action-list li .arrow { color:var(--teal); font-weight:700; flex-shrink:0; margin-top:.1rem; }
+.action-list li small { display:block; color:var(--text-muted); font-size:.83rem; margin-top:.15rem; }
+
+/* ─── NAVIGATION ─────────────────────────────────────── */
+.section-nav { display:flex; justify-content:flex-end; margin-top:3rem; }
+.btn-next { display:inline-flex; align-items:center; gap:.5rem; padding:.7rem 1.75rem; background:var(--blue); color:#fff; border:none; border-radius:var(--radius); font-family:'Inter',sans-serif; font-size:.88rem; font-weight:600; cursor:pointer; text-decoration:none; transition:opacity .2s, transform .15s; }
+.btn-next:hover { opacity:.9; transform:translateY(-2px); }
+.btn-next::after { content:'→'; }
+.btn-next.teal-btn { background:var(--teal); color:#000; }
+
+/* ─── ANIMATIONS ─────────────────────────────────────── */
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.section { animation:fadeIn .5s ease; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     ROLE GATE
+═══════════════════════════════════════════════════════ -->
+<div id="role-gate">
+  <div class="gate-eyebrow">WorkSpan Sales Training · Marketplace Adoption Play</div>
+  <h1 class="gate-title">From <span>Listing</span><br>to Motion.</h1>
+  <p class="gate-sub">A guided play for the cloud marketplace. Before we start — which role are you in?</p>
+  <div class="role-cards">
+    <a class="role-card" onclick="selectRole('bdr')" href="#">
+      <span class="role-icon">📡</span>
+      <div class="role-label">BDR</div>
+      <div class="role-desc">Prospecting &amp; pipeline creation</div>
+    </a>
+    <a class="role-card" onclick="selectRole('ae')" href="#">
+      <span class="role-icon">🤝</span>
+      <div class="role-label">AE</div>
+      <div class="role-desc">Discovery &amp; champion building</div>
+    </a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PROGRESS HEADER
+═══════════════════════════════════════════════════════ -->
+<header id="progress-header">
+  <div class="progress-logo">WorkSpan</div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  <span class="progress-label" id="section-label">Introduction</span>
+  <span class="role-badge bdr-badge">BDR</span>
+  <span class="role-badge ae-badge">AE</span>
+</header>
+
+<!-- ══════════════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════════════ -->
+<main>
+
+  <!-- ── SECTION 1: THE METAPHOR ─────────────────────── -->
+  <div class="section anchor" id="s1" data-label="The Big Idea">
+    <div class="eyebrow">The Big Idea</div>
+    <h2>Imagine a musician who<br><em>uploaded their album and went home.</em></h2>
+    <div class="body-text">
+      <p>They recorded it. They uploaded it to Spotify, Apple Music, every platform. Technically, anyone on earth can find them now.</p>
+      <p>But they didn't play a show. Didn't post. Didn't pitch to any playlist curators. Didn't tell their fans where to go listen. They just waited to be discovered.</p>
+      <p>Six months later, their cousin finds them by accident and goes: <em>"Wait — you're on Spotify?!"</em></p>
+    </div>
+
+    <div class="story-block">
+      <p class="story-text">Uploading is not a music career. <strong>The upload is infrastructure. The career is motion.</strong> The artists that break through play shows, build relationships with the people inside the platform, and drive their audience to stream. The algorithm rewards engagement, not existence. You can be technically available to 450 million people and be heard by absolutely no one.</p>
+    </div>
+
+    <div class="body-text">
+      <p>AWS Marketplace has over 10,000 listings. Your prospect is on AWS. Their buyers are on AWS. Their listing is technically accessible to every enterprise buyer who touches AWS.</p>
+      <p>Most of those listings sound exactly like that musician.</p>
+    </div>
+
+    <div class="callout teal">
+      <div class="callout-label">The One Idea That Drives This Whole Play</div>
+      <div class="callout-text">A listing means your product is <em>available</em> on the platform. A marketplace strategy means your sales team and partner team are actively moving buyers <em>through</em> it. The gap between those two things is exactly where you live.</div>
+    </div>
+
+    <details>
+      <summary>Why does the gap exist in the first place?</summary>
+      <div class="details-body">
+        <p>Because listing and selling are owned by different teams. The partner team gets the listing live — that's their job. But the sales team has to actually use it in deals. And no one ever sat the two teams down and said: <em>"Here's how this works when there's a real buyer."</em></p>
+        <p>The result: the partner team knows the listing exists. The sales team doesn't know how to bring it into a deal. The buyer wants to transact through marketplace (they have committed cloud spend to burn) and nobody on the other side is ready to help them do it.</p>
+        <p><strong>That's your door.</strong></p>
+      </div>
+    </details>
+
+    <div class="section-nav"><button class="btn-next" onclick="scrollTo('s2')">What's actually happening in the market</button></div>
+  </div>
+
+  <!-- ── SECTION 2: MARKET CONTEXT ───────────────────── -->
+  <div class="section anchor" id="s2" data-label="The Market">
+    <div class="eyebrow">The Market</div>
+    <h2>Why this matters <em>right now.</em></h2>
+    <div class="body-text">
+      <p>Cloud providers — AWS, Azure, GCP — have invested hundreds of billions of dollars in getting enterprises committed to their platforms. When a company signs an enterprise deal with AWS, they commit to spending a certain amount. Call it their <strong>committed cloud spend</strong>.</p>
+      <p>Here's the thing: they <em>have</em> to spend it. It's already allocated. And one of the fastest ways for them to burn that committed spend is to buy software through the marketplace.</p>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-pill"><div class="stat-number">$100B+</div><div class="stat-label">Quarterly cloud &amp; AI investment from hyperscalers</div></div>
+      <div class="stat-pill"><div class="stat-number">2 in 3</div><div class="stat-label">B2B companies say partners are their fastest growth engine</div></div>
+      <div class="stat-pill"><div class="stat-number">80%</div><div class="stat-label">Of partner team time spent on manual coordination, not revenue</div></div>
+    </div>
+
+    <div class="body-text">
+      <p>So buyers aren't reluctant to buy through marketplace — many of them <em>prefer</em> it because it counts against their committed spend. The demand is real.</p>
+      <p>The problem isn't the buyer. The problem is that the ISV's sales team doesn't know how to use the marketplace listing to close them.</p>
+    </div>
+
+    <details>
+      <summary>What is "committed cloud spend" exactly?</summary>
+      <div class="details-body">
+        <p>When a big enterprise signs a deal with AWS (called an Enterprise Discount Program, or EDP) or Azure, they commit to spending a certain dollar amount over 1–3 years. They get a discount in exchange for the commitment.</p>
+        <p>The problem: if they don't spend it all, they lose the unused amount. So their finance team is actively looking for ways to consume that spend. Buying software through the cloud marketplace counts against that commitment — which means buying from a marketplace listing is financially <em>easier</em> for these buyers than buying direct.</p>
+        <p><strong>Bottom line:</strong> the buyer may already be motivated to buy through marketplace. The ISV just needs a sales motion that actually facilitates it.</p>
+      </div>
+    </details>
+
+    <div class="proof-row">
+      <div class="proof-block">
+        <div class="proof-company">Boomi</div>
+        <div class="proof-stat">30×</div>
+        <div class="proof-context">Year-over-year marketplace growth with an active sales + partner motion</div>
+      </div>
+      <div class="proof-block">
+        <div class="proof-company">Boomi</div>
+        <div class="proof-stat">31%</div>
+        <div class="proof-context">Higher NRR on marketplace deals vs. direct. Marketplace buyers stick around.</div>
+      </div>
+    </div>
+
+    <div class="callout yellow">
+      <div class="callout-label">What this means for you</div>
+      <div class="callout-text">You're not selling into skepticism. You're selling into a market that already wants to move this way. Your prospect's listing is sitting on top of real buyer demand they haven't figured out how to capture yet.</div>
+    </div>
+
+    <div class="section-nav"><button class="btn-next" onclick="scrollTo('s3')">Dead listing vs. live strategy</button></div>
+  </div>
+
+  <!-- ── SECTION 3: DEAD vs. LIVE ─────────────────────── -->
+  <div class="section anchor" id="s3" data-label="Dead vs. Live">
+    <div class="eyebrow">The Contrast</div>
+    <h2>A dead listing looks <em>exactly</em> like a live one — from the outside.</h2>
+    <div class="body-text">
+      <p>Both have a logo. Both have a description. Both are technically "on" AWS, Azure, or GCP. You can't tell from the listing page alone which one is generating revenue.</p>
+      <p>But they're completely different on the inside.</p>
+    </div>
+
+    <div class="comparison">
+      <div class="compare-col dead">
+        <div class="compare-head">The Dead Listing</div>
+        <ul class="compare-list">
+          <li>Partner team owns the listing. Sales team doesn't know it exists.</li>
+          <li>No process for a seller to bring it into a deal.</li>
+          <li>Buyers arrive at the listing and have no path forward.</li>
+          <li>Revenue from marketplace is zero or a lucky accident.</li>
+          <li>Partner team can't prove ROI to their CRO.</li>
+          <li>Listing has been live 6+ months. Zero or two reviews.</li>
+        </ul>
+      </div>
+      <div class="compare-col live">
+        <div class="compare-head">The Live Strategy</div>
+        <ul class="compare-list">
+          <li>Partner team and sales team have a shared motion.</li>
+          <li>Sellers know exactly how to introduce marketplace in a deal.</li>
+          <li>Private offers are created for qualified buyers, not generic pricing.</li>
+          <li>Committed cloud spend is surfaced and used to accelerate close.</li>
+          <li>Marketplace revenue is tracked, attributed, and growing.</li>
+          <li>CRO can answer "what's our marketplace ARR?" in 10 seconds.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="body-text">
+      <p>The difference isn't technical. It's organizational. It's whether two teams are aligned on a shared motion.</p>
+    </div>
+
+    <details>
+      <summary>What's a "private offer" and why does it matter?</summary>
+      <div class="details-body">
+        <p>A standard marketplace listing has a public price. But for enterprise buyers, a private offer lets the ISV create custom pricing for a specific customer — with specific terms, discounts, and structure — that only that buyer sees.</p>
+        <p>This is how real deals happen on marketplace. The public listing is discovery. The private offer is the close. An ISV with a live strategy knows how to spin up a private offer for a qualified buyer. An ISV with a dead listing doesn't have this motion at all — their sellers don't even know the concept exists.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What does "buyer distance" mean?</summary>
+      <div class="details-body">
+        <p>Buyer distance is the organizational gap between the person you're selling to and the person who controls the cloud budget. A champion who is close to the CTO or CIO — close to the cloud spend decision — can easily route the purchase through marketplace. A champion who's deep in an operations team may have a long internal path to get there.</p>
+        <p>Part of the live strategy is helping your champion navigate that distance — understanding who holds the committed cloud spend and how to unlock it for the deal. That's something the partner team and sales team have to figure out together.</p>
+      </div>
+    </details>
+
+    <div class="section-nav"><button class="btn-next" onclick="scrollTo('s4')">Your role in the play</button></div>
+  </div>
+
+  <!-- ── SECTION 4: ROLE FORK ──────────────────────────── -->
+
+  <!-- BDR TRACK -->
+  <div class="section bdr-only anchor" id="s4" data-label="Your Role">
+    <div class="eyebrow">BDR Track</div>
+    <h2>Your job: find the <em>musician who's waiting to be discovered.</em></h2>
+    <div class="body-text">
+      <p>You're not looking for a random tech company. You're looking for a specific type of company at a specific moment of frustration. They have a listing. They have a partner team. They don't have a sales motion connected to it.</p>
+      <p>Here's how to find them — and how to open.</p>
+    </div>
+
+    <h3 style="margin:2rem 0 1rem; color:var(--text);">Who to target</h3>
+    <div class="step-list">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">They're an ISV or tech company with a cloud marketplace listing</div>
+          <div class="step-desc">Check <strong>AWS Marketplace, Azure Marketplace, or Google Cloud Marketplace</strong>. If they're listed, they've already accepted the premise. You're not selling the concept of marketplace — you're selling the motion.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">The listing looks quiet</div>
+          <div class="step-desc">Check: few or no reviews, listed 6+ months ago, no case studies linked, no "private offer" language on the listing page. <strong>Low review count is your most reliable dead-listing signal.</strong></div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Partner team exists on LinkedIn, but it's not connected to sales</div>
+          <div class="step-desc">Search their company on LinkedIn. Find titles like "Cloud Alliance Manager," "AWS Partnership Manager," "Head of Cloud GTM." Then look at their sales team — do they ever mention marketplace? Probably not.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Bonus: they're hiring for marketplace roles</div>
+          <div class="step-desc">A job posting for "Marketplace GTM Manager" or "Cloud Alliances Lead" is someone announcing they know they have a problem. <strong>Call before the hire lands — they're thinking about it right now.</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin:2rem 0 1rem; color:var(--text);">How to open</h3>
+    <div class="body-text">
+      <p>The worst thing you can do is call about WorkSpan. The best thing you can do is ask ONE question that makes them feel understood. You want them to tell you they have the problem — not you telling them they do.</p>
+    </div>
+
+    <div class="script-wrap">
+      <div class="script-label">Call opener — option 1</div>
+      <div class="script-block">"Hey [name] — quick question. Does your field sales team know how to bring your AWS listing into a deal?"</div>
+    </div>
+    <div class="script-wrap">
+      <div class="script-label">Call opener — option 2</div>
+      <div class="script-block">"I was looking at your listing on AWS — curious, how connected is that to your actual sales process right now?"</div>
+    </div>
+    <div class="script-wrap">
+      <div class="script-label">Email subject + opener</div>
+      <div class="script-block"><strong>Subject:</strong> Your AWS listing (quick question)<br><br>Noticed you've had a listing on AWS Marketplace for a while. Most partner teams I talk to are in the same spot — the listing is live but the sales team isn't connected to it yet. Curious if that's true for you. Worth 15 minutes?</div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">Remember</div>
+      <div class="callout-text">You're not opening with a pitch. You're opening with a mirror. Let them recognize themselves in the question. When they pause — that's your signal.</div>
+    </div>
+
+    <details>
+      <summary>What if they say "our listing is working fine"?</summary>
+      <div class="details-body">
+        <p>Good. Get curious, not defensive. Ask: <strong>"That's great — what does that look like? How are your sellers bringing it into deals?"</strong></p>
+        <p>If they have a real answer, they're either not your prospect right now, or they have a different problem you can uncover. If they pause or give a vague answer, the listing probably isn't as healthy as they're letting on. Stay curious.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What if they've never heard of WorkSpan?</summary>
+      <div class="details-body">
+        <p>That's fine — don't lead with the name. Your goal on call one is to qualify the problem, not close a deal. If the problem is real, you'll have time to introduce WorkSpan on a follow-up call with context. A rep who leads with product name on a cold call loses immediately. A rep who leads with a sharp question earns the right to explain what they do.</p>
+      </div>
+    </details>
+
+    <div class="section-nav"><button class="btn-next" onclick="scrollTo('s5')">Check your understanding →</button></div>
+  </div>
+
+  <!-- AE TRACK -->
+  <div class="section ae-only anchor" id="s4" data-label="Your Role">
+    <div class="eyebrow">AE Track</div>
+    <h2>Your job: find the person <em>who already knows there's a problem.</em></h2>
+    <div class="body-text">
+      <p>You're not educating your champion — you're finding the person who already feels the gap and giving them a language and a path forward. They wake up every morning knowing their listing is underperforming. They just don't know what to do about it alone.</p>
+    </div>
+
+    <h3 style="margin:2rem 0 .75rem; color:var(--text);">Who you're looking for</h3>
+    <div class="persona-card">
+      <div class="persona-name">Alliance Management Executive / Head of Business Development</div>
+      <div class="persona-titles">VP of Strategic Alliances · Global Alliance Director · Head of Cloud Partnerships · Head of Business Development</div>
+      <div class="pain-item"><div class="pain-dot">!</div><div>"My CRO doesn't believe marketplace is worth the investment — and I can't prove them wrong."</div></div>
+      <div class="pain-item"><div class="pain-dot">!</div><div>"Our sellers don't know how to bring the listing into a deal. I've tried to explain it but it doesn't stick."</div></div>
+      <div class="pain-item"><div class="pain-dot">!</div><div>"I'm spending all my time managing the plumbing instead of building the relationship with AWS."</div></div>
+      <div class="pain-item"><div class="pain-dot">!</div><div>"I know we have committed spend sitting in our customers' accounts that we're not using."</div></div>
+    </div>
+
+    <div class="body-text">
+      <p>This person <em>can't fix this alone.</em> They need sales team alignment and they don't control the sales team. That's the structural pain. That's why they're your champion — they have a problem only an outside catalyst can solve.</p>
+    </div>
+
+    <h3 style="margin:2rem 0 .75rem; color:var(--text);">How to start the conversation</h3>
+    <div class="body-text">
+      <p>Don't pitch. Discover. Your job on the first call is to help them say the problem out loud — in their own words. The moment they do that, you're their ally, not a vendor.</p>
+    </div>
+
+    <div class="step-list">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Open with the operational question</div>
+          <div class="step-desc"><strong>"When one of your sellers has a prospect who wants to transact through AWS — what does that process look like right now?"</strong> This surfaces the friction without feeling like a sales call.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Go to the attribution question</div>
+          <div class="step-desc"><strong>"If your CRO asked you tomorrow what your marketplace-driven ARR is — how easy is that to answer?"</strong> Most of them will pause. That pause is everything.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Name the gap back to them</div>
+          <div class="step-desc">Once they've told you about the problem, reflect it: <strong>"So the listing exists, but the sales motion isn't connected to it yet — is that right?"</strong> When they say yes, you have your champion.</div>
+        </div>
+      </div>
+    </div>
+
+    <details>
+      <summary>What if they say everything is working fine?</summary>
+      <div class="details-body">
+        <p>Get specific. Ask: <strong>"What does good look like for you? What would great look like?"</strong> or <strong>"How many deals last quarter closed through marketplace?"</strong></p>
+        <p>If they can answer those questions confidently with real numbers, you may be in the wrong account. If they get vague, the problem is real — they just haven't been given permission to say it yet. Stay curious and keep digging.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Who else should you be talking to in the account?</summary>
+      <div class="details-body">
+        <p>Your champion is the Alliance Executive or Head of BizDev. But they'll need allies to make change happen. Keep an eye on:</p>
+        <ul>
+          <li><strong>VP of Sales</strong> — They care about win rate and deal size. Partner-involved deals are bigger. If they know that, they become a sponsor.</li>
+          <li><strong>Sales Operations</strong> — They own the CRM. Any workflow change runs through them. Get them curious early.</li>
+          <li><strong>CRO</strong> — Usually the blocker or the accelerator. Your champion needs to be able to walk into the CRO conversation armed with data. Help them do that.</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="callout teal">
+      <div class="callout-label">The move that separates good AEs from great ones</div>
+      <div class="callout-text">When your champion says "our listing does okay but I'm not sure it's driving revenue" — don't pitch. Ask: <em>"Is the problem that buyers aren't finding the listing, or that your sellers aren't bringing it into deals?"</em> That question splits the problem in two. Almost always, they'll say: the sellers. That's your lane.</div>
+    </div>
+
+    <div class="section-nav"><button class="btn-next" onclick="scrollTo('s5')">Check your understanding →</button></div>
+  </div>
+
+  <!-- ── SECTION 5: CHECKPOINT ─────────────────────────── -->
+  <div class="section anchor" id="s5" data-label="Checkpoint">
+    <div class="eyebrow teal">Checkpoint</div>
+    <h2>Before the play: <em>let's make sure it sticks.</em></h2>
+    <div class="body-text">
+      <p>Answer the question below in your own words. No right answer — just yours. A coach will respond.</p>
+    </div>
+
+    <!-- Checkpoint 1 -->
+    <div class="checkpoint-card">
+      <div class="checkpoint-label">Question 1 of 2</div>
+      <div class="checkpoint-prompt">In one or two sentences: what's the difference between a listing and a marketplace strategy? Say it like you'd explain it to a friend who doesn't work in tech.</div>
+      <textarea class="checkpoint-textarea" id="cp1-input" placeholder="Write your answer here..."></textarea>
+      <button class="checkpoint-submit" onclick="gradeCheckpoint(1)">Get coaching →</button>
+      <div class="checkpoint-response" id="cp1-response">
+        <div class="coach-label">Your Coach</div>
+        <div class="coach-text" id="cp1-text"></div>
+      </div>
+    </div>
+
+    <!-- Checkpoint 2 — BDR -->
+    <div class="checkpoint-card bdr-only">
+      <div class="checkpoint-label">Question 2 of 2 · BDR</div>
+      <div class="checkpoint-prompt">You just found a company with a 9-month-old AWS listing and 1 review. Write your cold call opening line. One sentence. Go.</div>
+      <textarea class="checkpoint-textarea" id="cp2-bdr-input" placeholder="Write your opening line..."></textarea>
+      <button class="checkpoint-submit" onclick="gradeCheckpoint('2-bdr')">Get coaching →</button>
+      <div class="checkpoint-response" id="cp2-bdr-response">
+        <div class="coach-label">Your Coach</div>
+        <div class="coach-text" id="cp2-bdr-text"></div>
+      </div>
+    </div>
+
+    <!-- Checkpoint 2 — AE -->
+    <div class="checkpoint-card ae-only">
+      <div class="checkpoint-label">Question 2 of 2 · AE</div>
+      <div class="checkpoint-prompt">Your champion says: "The listing does okay, but I'm honestly not sure it's really driving revenue." What's your very next question?</div>
+      <textarea class="checkpoint-textarea" id="cp2-ae-input" placeholder="Write your next question..."></textarea>
+      <button class="checkpoint-submit" onclick="gradeCheckpoint('2-ae')">Get coaching →</button>
+      <div class="checkpoint-response" id="cp2-ae-response">
+        <div class="coach-label">Your Coach</div>
+        <div class="coach-text" id="cp2-ae-text"></div>
+      </div>
+    </div>
+
+    <div class="section-nav"><button class="btn-next" onclick="scrollTo('s6')">The Play →</button></div>
+  </div>
+
+  <!-- ── SECTION 6: THE PLAY ───────────────────────────── -->
+  <div class="section anchor" id="s6" data-label="The Play">
+
+    <!-- BDR PLAY -->
+    <div class="bdr-only">
+      <div class="eyebrow">The Play · BDR</div>
+      <h2>Your four-step <em>prospecting sequence.</em></h2>
+      <div class="body-text">
+        <p>This is your motion, start to finish. Each step has one job. Don't skip ahead.</p>
+      </div>
+
+      <div class="step-list">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Identify the dead listing</div>
+            <div class="step-desc">Find an ISV or tech company on AWS, Azure, or GCP Marketplace with a listing older than 6 months and fewer than 5 reviews. Confirm they have a partner team (LinkedIn search). Confirm their sales team doesn't mention marketplace anywhere.</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Find the right person</div>
+            <div class="step-desc">Your target is the <strong>Head of Cloud Partnerships, VP of Alliances, or Head of Business Development</strong>. Not the CRO (too senior, too busy). Not the sales rep (wrong lane). Find the person who owns the cloud partnership.</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Open with the gap, not the product</div>
+            <div class="step-desc">Your opener is a question about their sales team's connection to the listing — not a pitch about WorkSpan. <strong>"Does your sales team know how to bring your AWS listing into a deal?"</strong> Silence after this question means you're in the right place.</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Book it on the problem, not the product</div>
+            <div class="step-desc">If they express any frustration with the gap — that's your meeting. <strong>"That's exactly what we help companies solve. Could we get 25 minutes to show you what connecting those two teams actually looks like?"</strong> The AE takes it from here.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">What good looks like</div>
+        <div class="callout-text">Your prospect gets off the call thinking: "That rep understood something about our business that most vendors don't." That's it. You don't need to explain WorkSpan in detail. You need them to feel understood.</div>
+      </div>
+    </div>
+
+    <!-- AE PLAY -->
+    <div class="ae-only">
+      <div class="eyebrow">The Play · AE</div>
+      <h2>Your three-step <em>champion conversation arc.</em></h2>
+      <div class="body-text">
+        <p>You're building a champion, not closing a deal — yet. The goal of the first two conversations is for them to decide you're the person who finally gets it.</p>
+      </div>
+
+      <div class="step-list">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Call 1: Surface the real problem</div>
+            <div class="step-desc">Discovery only. Ask the operational question: <strong>"When a seller has a buyer who wants to transact through marketplace — what does that process look like today?"</strong> Then the attribution question: <strong>"If your CRO asked you tomorrow what your marketplace ARR is — how easy is that to answer?"</strong> Listen more than you talk.</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Between call 1 and call 2: Do your homework</div>
+            <div class="step-desc">Look at the account. Understand their cloud partner (AWS, Azure, or GCP). Note their listing status. Find out who their CRO is and what they care about. Come back to call 2 armed with specifics — <strong>"I was looking at your AWS listing and noticed X..."</strong> shows you're serious.</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Call 2: Show them what "live" looks like</div>
+            <div class="step-desc">Show the contrast between a dead listing and a live strategy in concrete terms. Use Boomi's story: <strong>30× YoY marketplace growth, 31% higher NRR</strong>. Then ask: <strong>"If you could show your CRO that chart in six months, what would that change for you?"</strong> Let them sell themselves.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proof-row">
+        <div class="proof-block">
+          <div class="proof-company">Deloitte</div>
+          <div class="proof-stat">$262M</div>
+          <div class="proof-context">Partner-influenced impact in 6 months. Scaled from 1 to 25+ alliances.</div>
+        </div>
+        <div class="proof-block">
+          <div class="proof-company">Boomi</div>
+          <div class="proof-stat">101%</div>
+          <div class="proof-context">YoY co-sell ACV growth. 90% partner attach rate on new deals.</div>
+        </div>
+      </div>
+
+      <div class="callout teal">
+        <div class="callout-label">The champion test</div>
+        <div class="callout-text">You have a real champion when they say something like: <em>"I need to show this to my CRO."</em> Until that happens, keep uncovering pain. The moment they want to bring you internal — you've won the champion conversation.</div>
+      </div>
+    </div>
+
+    <div class="section-nav"><button class="btn-next teal-btn" onclick="scrollTo('s7')">Try it — live roleplay →</button></div>
+  </div>
+
+  <!-- ── SECTION 7: ROLEPLAY ───────────────────────────── -->
+  <div class="section anchor" id="s7" data-label="Roleplay">
+    <div class="eyebrow yellow">Roleplay</div>
+    <h2>Your turn. <em>Real scenario, real pressure.</em></h2>
+    <div class="body-text">
+      <p>Read the scenario. Type what you'd actually say. A coach will give you feedback on whether it would land.</p>
+    </div>
+
+    <!-- BDR Roleplay -->
+    <div class="bdr-only">
+      <div class="scenario-card">
+        <div class="scenario-label">Scenario · BDR Cold Call</div>
+        <div class="scenario-text">You're calling the Head of AWS Partnerships at a mid-sized SaaS company. You checked — they've had a listing on AWS Marketplace for 8 months. One review. Their sales team's LinkedIn profiles mention nothing about marketplace. She answers.</div>
+        <div class="prospect-says">"We already have a listing on AWS, so I'm not sure what you'd be offering us."</div>
+      </div>
+      <div class="checkpoint-card" style="margin-top:0; border-color:var(--yellow);">
+        <div class="checkpoint-label" style="color:var(--yellow);">Your response</div>
+        <div class="checkpoint-prompt">What do you say next? Write it out like you'd actually say it on a call.</div>
+        <textarea class="checkpoint-textarea" id="rp-bdr-input" placeholder="Your response here..."></textarea>
+        <button class="checkpoint-submit" style="background:var(--yellow); color:#000;" onclick="gradeRoleplay('bdr')">Get coaching →</button>
+        <div class="checkpoint-response" id="rp-bdr-response">
+          <div class="coach-label">Your Coach</div>
+          <div class="coach-text" id="rp-bdr-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AE Roleplay -->
+    <div class="ae-only">
+      <div class="scenario-card">
+        <div class="scenario-label">Scenario · AE Discovery Call</div>
+        <div class="scenario-text">You're on a first discovery call with the VP of Strategic Alliances at a $50M ARR SaaS company. They've been on AWS Marketplace for a year. You asked how connected the listing is to their sales process.</div>
+        <div class="prospect-says">"Honestly, the listing does okay — we get some traffic — but I'm not sure it's really translating into revenue. The sales team kind of knows it exists."</div>
+      </div>
+      <div class="checkpoint-card" style="margin-top:0; border-color:var(--yellow);">
+        <div class="checkpoint-label" style="color:var(--yellow);">Your response</div>
+        <div class="checkpoint-prompt">What do you say next? Write it exactly as you'd say it on the call.</div>
+        <textarea class="checkpoint-textarea" id="rp-ae-input" placeholder="Your response here..."></textarea>
+        <button class="checkpoint-submit" style="background:var(--yellow); color:#000;" onclick="gradeRoleplay('ae')">Get coaching →</button>
+        <div class="checkpoint-response" id="rp-ae-response">
+          <div class="coach-label">Your Coach</div>
+          <div class="coach-text" id="rp-ae-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-nav"><button class="btn-next teal-btn" onclick="scrollTo('s8')">I'm ready →</button></div>
+  </div>
+
+  <!-- ── SECTION 8: GRADUATION ─────────────────────────── -->
+  <div class="section anchor" id="s8" data-label="You're Ready">
+    <div class="eyebrow teal">You're Ready</div>
+    <h2>Three things you now know<br><em>that most reps don't.</em></h2>
+
+    <div class="comparison" style="grid-template-columns:1fr;">
+      <div class="compare-col live">
+        <div class="compare-head">What you walked away with</div>
+        <ul class="compare-list">
+          <li>The difference between a listing (infrastructure) and a strategy (motion) — and why most companies are stuck at infrastructure.</li>
+          <li>Why the buyer demand is real — committed cloud spend is sitting there, waiting to be used through marketplace.</li>
+          <li>How to find the person who already knows there's a problem and give them a path forward.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BDR graduation -->
+    <div class="bdr-only">
+      <div class="grad-card">
+        <span class="grad-icon">📡</span>
+        <div class="grad-title">BDR: Your next 24 hours</div>
+        <div class="grad-text">Here's how to put this to work immediately.</div>
+        <ul class="action-list">
+          <li><span class="arrow">→</span><div>Pick one company from your target list. Go find their marketplace listing — AWS, Azure, or GCP. Count the reviews.<small>If they have fewer than 5, you have a signal. Put them at the top of your call list today.</small></div></li>
+          <li><span class="arrow">→</span><div>Find the Head of Cloud Partnerships or VP of Alliances on LinkedIn.<small>Not sales. Not marketing. The person who owns the cloud partnership relationship.</small></div></li>
+          <li><span class="arrow">→</span><div>Call them with one question: "Does your sales team know how to bring your AWS listing into a deal?"<small>Then stop talking. The pause after that question is where your deal starts.</small></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AE graduation -->
+    <div class="ae-only">
+      <div class="grad-card">
+        <span class="grad-icon">🤝</span>
+        <div class="grad-title">AE: Your next 24 hours</div>
+        <div class="grad-text">Here's how to put this to work immediately.</div>
+        <ul class="action-list">
+          <li><span class="arrow">→</span><div>Look at your current pipeline. Which accounts have a cloud marketplace listing?<small>That's where your fastest champion opportunity lives. Someone in that account is frustrated with the gap right now.</small></div></li>
+          <li><span class="arrow">→</span><div>Find the Alliance Executive or Head of BizDev for each of those accounts.<small>That's your call. Not the CRO yet — the person who owns the partnership and feels the pain every day.</small></div></li>
+          <li><span class="arrow">→</span><div>Prep two questions before every champion call: the operational question and the attribution question.<small>"What does the process look like when a seller brings marketplace into a deal?" and "How easy is your marketplace ARR to answer for your CRO?"</small></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout teal" style="text-align:center; margin-top:3rem;">
+      <div class="callout-label" style="justify-content:center;">The sentence to remember</div>
+      <div class="callout-text" style="font-size:1.1rem; font-weight:600;">"I help companies turn their cloud marketplace listing from a checkbox into a selling motion that their sales team and partner team actually use together."</div>
+    </div>
+
+    <p style="text-align:center; color:var(--text-dim); font-size:.85rem; margin-top:3rem; padding-bottom:2rem;">WorkSpan Sales Enablement · Marketplace Adoption Play · Built with WorkSpan + Octave AI</p>
+  </div>
+
+</main>
+
+<script>
+// ─── ROLE SELECTION ───────────────────────────────────
+function selectRole(role) {
+  event.preventDefault();
+  document.body.classList.add('role-' + role);
+  document.getElementById('role-gate').classList.add('hidden');
+  updateProgress();
+  return false;
+}
+
+// ─── PROGRESS BAR ────────────────────────────────────
+const sections = document.querySelectorAll('.section[data-label]');
+const fill = document.getElementById('progress-fill');
+const label = document.getElementById('section-label');
+
+function updateProgress() {
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = total > 0 ? Math.min(100, (window.scrollY / total) * 100) : 0;
+  fill.style.width = pct + '%';
+
+  // Find current visible section
+  let current = sections[0];
+  sections.forEach(s => {
+    const rect = s.getBoundingClientRect();
+    if (rect.top <= 120) current = s;
+  });
+  if (current) label.textContent = current.dataset.label || '';
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+updateProgress();
+
+// ─── SCROLL TO ───────────────────────────────────────
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── CHECKPOINT GRADING ──────────────────────────────
+function gradeCheckpoint(num) {
+  if (num === 1) {
+    const text = document.getElementById('cp1-input').value.trim();
+    const resp = document.getElementById('cp1-response');
+    const out  = document.getElementById('cp1-text');
+    if (!text || text.length < 15) {
+      out.innerHTML = "Give it a real shot — even a rough draft. Pretend you're explaining this to a friend over coffee.";
+    } else {
+      const lower = text.toLowerCase();
+      const hasMotion = /motion|active|sales|selling|use|connect|align|team|move/.test(lower);
+      const hasInfra  = /listing|available|exist|platform|live|upload|profile/.test(lower);
+      const hasBoth   = /partner|cloud|aws|azure|buyer|revenue/.test(lower);
+
+      if (hasMotion && hasInfra && hasBoth) {
+        out.innerHTML = `<strong>Really sharp.</strong> You've got the infrastructure vs. motion distinction, you're naming the teams, and you're grounding it in the actual market. <span class="hl">One last layer to add:</span> the buyer already wants to buy this way — they have committed cloud spend they need to burn. The urgency isn't manufactured. When you add that, you're not just explaining the gap, you're explaining why it costs money to leave it open.`;
+      } else if (hasMotion && hasInfra) {
+        out.innerHTML = `<strong>Solid.</strong> You've got the core: a listing is infrastructure, a strategy is motion. <span class="hl">What's missing:</span> name the two teams. The partner team built the listing. The sales team has to actually use it in deals. When those two aren't coordinated, the listing just sits there — regardless of how good the product is. Add that and your answer is complete.`;
+      } else if (hasMotion) {
+        out.innerHTML = `<strong>Good instinct</strong> — you're thinking about motion, which is the right frame. <span class="hl">Make it more concrete:</span> what's the static side? The listing. A listing means the product is technically available on AWS/Azure/GCP. A strategy means the sales team knows how to bring that listing into a real deal with a real buyer. Try rephrasing with that contrast front and center.`;
+      } else if (hasInfra) {
+        out.innerHTML = `<strong>You've got the infrastructure side</strong> — the listing exists, it's available. <span class="hl">Now add the motion:</span> what makes the difference between a dead listing and a live one isn't the listing itself — it's whether the sales team is connected to it. Without that, you're just the musician who uploaded and went home.`;
+      } else {
+        out.innerHTML = `<strong>You're on the right track.</strong> Try building your answer around one contrast: <span class="hl">infrastructure vs. motion</span>. A listing is the infrastructure — the product is available on the platform. A strategy is the motion — the sales team knows how to bring that listing into deals, and the partner team is aligned on how to support them. Say that in plain language and you've nailed it.`;
+      }
+    }
+    resp.classList.add('visible');
+  }
+
+  if (num === '2-bdr') {
+    const text = document.getElementById('cp2-bdr-input').value.trim();
+    const resp = document.getElementById('cp2-bdr-response');
+    const out  = document.getElementById('cp2-bdr-text');
+    if (!text || text.length < 10) {
+      out.innerHTML = "Write it out — even if it feels rough. You can't get better at something you won't try.";
+    } else {
+      const lower = text.toLowerCase();
+      const pitchesProduct   = /workspan|our platform|what we do|we help|we offer/.test(lower);
+      const asksQuestion     = /\?/.test(text);
+      const mentionsGap      = /sales team|seller|connect|bring|deal|process/.test(lower);
+      const mentionsListing  = /listing|aws|azure|gcp|marketplace/.test(lower);
+
+      if (pitchesProduct) {
+        out.innerHTML = `<strong>Pump the brakes.</strong> If you open with WorkSpan, they tune out in 8 seconds. They haven't told you they have a problem yet — so a pitch lands as noise. <span class="hl">Your job on this call is one question</span>, not an explanation of what you do. Try: <em>"Does your sales team know how to bring your AWS listing into a deal?"</em> That's it. Ask, then stop talking.`;
+      } else if (asksQuestion && mentionsGap) {
+        out.innerHTML = `<strong>Strong.</strong> You're asking about the gap, not pitching the solution — that's exactly right. <span class="hl">One refinement:</span> make it conversational, not interrogative. Open with energy: "Quick question for you..." or "I was curious about something..." Then land the question and go quiet. The silence after a good question is your most powerful tool.`;
+      } else if (asksQuestion && mentionsListing) {
+        out.innerHTML = `<strong>Good instinct</strong> — you're asking, which is better than pitching. <span class="hl">Sharpen the question</span> to be about the gap specifically. Instead of asking about the listing in general, ask about what connects the listing to their sales team: <em>"When one of your sellers has a buyer who wants to go through marketplace — what does that look like right now?"</em> That surfaces the friction fast.`;
+      } else if (asksQuestion) {
+        out.innerHTML = `<strong>You asked a question — that's the right instinct.</strong> <span class="hl">Make it more specific to the pain.</span> The question that lands best is one about whether their sales team knows the listing exists and can use it. Something like: <em>"Does your field sales team know how to bring your AWS listing into a deal?"</em> That question is so specific it either confirms the problem immediately or starts a conversation.`;
+      } else {
+        out.innerHTML = `<strong>You're not asking a question — and that's the miss.</strong> Everything you say before they respond should end with a "?" The most powerful opener for this call is something like: <em>"Quick question — does your sales team know how to bring your AWS listing into a deal?"</em> Ask it. Then stop. Let them answer. Their response will tell you everything.`;
+      }
+    }
+    resp.classList.add('visible');
+  }
+
+  if (num === '2-ae') {
+    const text = document.getElementById('cp2-ae-input').value.trim();
+    const resp = document.getElementById('cp2-ae-response');
+    const out  = document.getElementById('cp2-ae-text');
+    if (!text || text.length < 10) {
+      out.innerHTML = "Type your question. Even a rough version is better than nothing — that's what coaching is for.";
+    } else {
+      const lower = text.toLowerCase();
+      const pitches = /workspan|we help|let me show|our platform|solution/.test(lower);
+      const asksQuestion = /\?/.test(text);
+      const mentionsSales = /sales team|seller|field|rep/.test(lower);
+      const mentionsRevenue = /revenue|arr|number|metric|measure|prove|cro|quantif/.test(lower);
+      const splitsQuestion = /buyer|find|discover|vs|or|seller/.test(lower);
+
+      if (pitches) {
+        out.innerHTML = `<strong>Not yet.</strong> She just gave you a thread — pull it, don't pitch over it. When she says "I'm not sure it's driving revenue," that's an invitation to go deeper. <span class="hl">Your next move is a question</span>: <em>"When you say it's not driving revenue — is the problem that buyers aren't finding the listing, or that your sellers aren't bringing it into deals?"</em> That one question will open everything.`;
+      } else if (asksQuestion && splitsQuestion) {
+        out.innerHTML = `<strong>Really strong.</strong> You split the problem in two — buyer-side vs. seller-side — and that's the sharpest question in this play. <span class="hl">Almost every time,</span> they'll say "the sellers." That answer is your lane. Reflect it back to confirm: <em>"So the listing exists, but the sales motion isn't connected to it yet — is that right?"</em> When they say yes, you have your champion.`;
+      } else if (asksQuestion && mentionsSales) {
+        out.innerHTML = `<strong>Good direction.</strong> You're asking about the sales team, which is where the real problem lives. <span class="hl">Sharpen it one more time:</span> ask her to split buyer-side from seller-side. <em>"Is it that buyers aren't finding the listing — or that your sellers aren't bringing it into deals?"</em> That gives her two clean buckets and almost always leads to: <em>"Honestly, the sellers don't really know what to do with it."</em> That's your open.`;
+      } else if (asksQuestion && mentionsRevenue) {
+        out.innerHTML = `<strong>Solid instinct</strong> — you're asking about measurement, which matters. <span class="hl">One more layer:</span> pair it with the operational question. Ask how she'd answer the revenue question for her CRO, then ask what process exists for sellers to bring the listing into deals. The gap between those two answers is your entire deal.`;
+      } else if (asksQuestion) {
+        out.innerHTML = `<strong>Good — you asked a question.</strong> <span class="hl">Tighten the focus.</span> The question that opens this conversation widest is: <em>"When you say it's not driving revenue — is the problem that buyers aren't finding the listing, or that your sellers aren't bringing it into deals?"</em> Offer her two buckets. She'll pick the seller bucket almost every time. That's where your deal lives.`;
+      } else {
+        out.innerHTML = `<strong>You need a question here, not a statement.</strong> She's given you a confession — she doesn't know if the listing is working. <span class="hl">The move is to ask, not tell.</span> Try: <em>"Is the problem that buyers aren't finding the listing, or that your sellers aren't bringing it into deals?"</em> Then be quiet. Her answer will tell you exactly how to proceed.`;
+      }
+    }
+    resp.classList.add('visible');
+  }
+}
+
+// ─── ROLEPLAY GRADING ────────────────────────────────
+function gradeRoleplay(role) {
+  if (role === 'bdr') {
+    const text = document.getElementById('rp-bdr-input').value.trim();
+    const resp = document.getElementById('rp-bdr-response');
+    const out  = document.getElementById('rp-bdr-text');
+    if (!text || text.length < 10) { out.innerHTML = "Write something — even if it's rough. That's the point."; resp.classList.add('visible'); return; }
+    const lower = text.toLowerCase();
+    const pitches = /workspan|our platform|we help companies|what we do|let me tell/.test(lower);
+    const asksAboutSales = /sales team|seller|field|rep|know|deal|bring|use/.test(lower);
+    const agreesWithThem = /^(right|yes|exactly|great|totally|i know|i understand|of course)/.test(lower);
+
+    if (pitches) {
+      out.innerHTML = `<strong>She told you she already has a listing — and you responded by pitching.</strong> She's going to say "we're all set, thanks" and hang up in 10 seconds. <span class="hl">The move here is to agree and then ask the sharper question.</span> Try: <em>"Totally — you've got the listing. My question is actually about what happens next: when one of your sellers has a prospect who wants to transact through AWS, what does that process look like right now?"</em> Acknowledge what she said, then reframe it.`;
+    } else if (agreesWithThem && asksAboutSales) {
+      out.innerHTML = `<strong>That's the play.</strong> You acknowledged her reality, didn't argue with it, and asked the one question that reframes the conversation. <span class="hl">That's exactly how this call goes well.</span> If she pauses before answering — you're in. The pause means the sales process either doesn't exist or is messier than she'd like to admit. Stay curious and listen.`;
+    } else if (asksAboutSales) {
+      out.innerHTML = `<strong>Good instinct — you went after the sales motion, not the listing itself.</strong> <span class="hl">One thing to add:</span> acknowledge what she said first before asking your question. "Totally — the listing is the starting point. My question is actually..." That one-sentence bridge keeps the conversation from feeling like you ignored her objection. Then your question lands much better.`;
+    } else if (agreesWithThem) {
+      out.innerHTML = `<strong>Good that you didn't argue with her.</strong> But you stopped short — agreeing and then going silent (or changing the subject) won't get you anywhere. <span class="hl">After you acknowledge, ask the sharper question:</span> <em>"Having a listing is the starting point — I was curious about the step after that: when one of your sellers is talking to a prospect who wants to go through AWS, what does that conversation look like?"</em> That's where the real information lives.`;
+    } else {
+      out.innerHTML = `<strong>She said "we already have a listing" — which is true, and it's not an objection to argue with.</strong> <span class="hl">The move is: agree, then reframe.</span> Something like: <em>"Totally — the listing is there, that's great. My question is actually about what happens with your sales team: when a seller is in a deal and the buyer wants to go through AWS, what does that look like on your end?"</em> You're not challenging the listing. You're asking what happens after it.`;
+    }
+    resp.classList.add('visible');
+  }
+
+  if (role === 'ae') {
+    const text = document.getElementById('rp-ae-input').value.trim();
+    const resp = document.getElementById('rp-ae-response');
+    const out  = document.getElementById('rp-ae-text');
+    if (!text || text.length < 10) { out.innerHTML = "Write it out. The feedback will be worth it."; resp.classList.add('visible'); return; }
+    const lower = text.toLowerCase();
+    const pitches = /workspan|our platform|we help|let me show|solution|demo/.test(lower);
+    const asksQuestion = /\?/.test(text);
+    const goesDeeper = /sales team|seller|cro|attribute|prove|measure|number|percent|how many|what does|what would/.test(lower);
+
+    if (pitches) {
+      out.innerHTML = `<strong>She gave you a gift — she's confused and frustrated — and you responded by pitching.</strong> That kills the trust you just built. <span class="hl">Stay in the question.</span> When someone says "I'm not sure it's driving revenue," the right move is: <em>"What would 'driving revenue' look like to you? What's the number you'd want to be able to show your CRO?"</em> Let her define what good looks like. That conversation is worth ten slides.`;
+    } else if (asksQuestion && goesDeeper) {
+      out.innerHTML = `<strong>That's exactly right.</strong> You stayed in discovery, you pushed for specifics, and you tied it to something she cares about — either the number her CRO wants or the operational question of how her sellers engage. <span class="hl">Whatever she says next, reflect it back:</span> <em>"So it sounds like the listing exists but the sales motion isn't really connected to it yet — is that a fair read?"</em> When she says yes, you have your champion. That's the moment.`;
+    } else if (asksQuestion) {
+      out.innerHTML = `<strong>Good — you asked a question.</strong> <span class="hl">Sharpen it toward the operational or attribution gap.</span> The two questions that surface the most pain: <em>"When your sellers are in a deal where the buyer wants to go through marketplace — what does that process look like today?"</em> or <em>"If your CRO asked you tomorrow what your marketplace ARR is — how easy is that to answer?"</em> Either one will open this conversation.`;
+    } else {
+      out.innerHTML = `<strong>You need to ask a question here — not make a statement.</strong> She's telling you she doesn't know if it's working. <span class="hl">Stay in that moment with her.</span> Ask: <em>"What would tell you it was working? What number would make your CRO satisfied?"</em> or <em>"When your sellers have a buyer who wants to go through AWS — what happens on your end?"</em> Those questions will get her talking about the real problem.`;
+    }
+    resp.classList.add('visible');
+  }
+}
+</script>
+</body>
+</html>
