@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The ISV Cloud Opportunity: Marketplace & Co-Sell</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --ink:          #010F30;   /* Cetacean Blue   */
+    --ink-mid:      #1A2A50;   /* custom mid blue */
+    --cream:        #F9F9F7;   /* Cultured        */
+    --cream-warm:   #E0E9ED;   /* Cool White      */
+    --blue:         #2E67ED;   /* Ultramarine     */
+    --blue-light:   #34BFEA;   /* Picton Blue     */
+    --violet:       #A948E3;   /* Medium Orchid   */
+    --violet-light: #E0BEFB;   /* Mauve           */
+    --violet-deep:  #240266;   /* Deep Violet     */
+    --mist:         #AAD9F2;   /* Light Teal      */
+    --white:        #FFFFFF;
+    --border:       rgba(1,15,48,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 16px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    background: var(--ink);
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .hero-image-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .hero-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.72;
+  }
+
+  /* CSS aqueduct fallback — shown only when image fails */
+  .hero-art {
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    display: none; /* shown via JS if image fails */
+  }
+
+  .hero-art-inner {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 70%, rgba(52,191,234,0.18) 0%, transparent 45%),
+      radial-gradient(circle at 85% 20%, rgba(169,72,227,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(46,103,237,0.10) 0%, transparent 60%),
+      linear-gradient(145deg, #010F30 0%, #0A1F5C 45%, #010F30 100%);
+  }
+
+  /* Geometric aqueduct SVG overlay */
+  .hero-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    padding: 64px 72px;
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 28px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1px;
+    background: var(--blue-light);
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(42px, 5.5vw, 68px);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--white);
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--blue-light);
+  }
+
+  .hero-lead {
+    font-size: 18px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.78);
+    max-width: 620px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    border-top: 1px solid rgba(52,191,234,0.4);
+    padding-top: 16px;
+  }
+
+  .hero-stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--blue-light);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .hero-stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+  }
+
+  /* ─── SECTION WRAPPERS ─── */
+  .section {
+    padding: 96px 72px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 0 72px;
+    max-width: calc(1100px - 144px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ─── SECTION HEADERS ─── */
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 18px;
+  }
+
+  .section-label.gold  { color: var(--blue); }
+  .section-label.sage  { color: var(--violet-deep); }
+  .section-label.rust  { color: var(--violet); }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  h2.section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 3.5vw, 48px);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  h2.section-title em {
+    font-style: italic;
+    color: var(--blue);
+  }
+
+  .section-intro {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--ink-mid);
+    max-width: 700px;
+    line-height: 1.75;
+    margin-bottom: 56px;
+  }
+
+  /* ─── SPLIT LAYOUT ─── */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .split.image-right .split-text { order: 1; }
+  .split.image-right .split-visual { order: 2; }
+
+  .split.image-left .split-text { order: 2; }
+  .split.image-left .split-visual { order: 1; }
+
+  /* ─── ILLUSTRATION FRAMES ─── */
+  .illustration-frame {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--cream-warm);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .illustration-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .illustration-frame .art-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* CSS Art: Conveyor Belt */
+  .css-conveyor {
+    width: 100%;
+    height: 100%;
+    background: var(--cream-warm);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* CSS Art: Bicycle */
+  .css-bicycle {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #EDE8DF 0%, #E0D9CE 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* CSS Art: Windmill */
+  .css-windmill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #EDE8DF 0%, #DDD5C8 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── BODY TEXT ─── */
+  .body-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--ink-mid);
+  }
+
+  .body-text p { margin-bottom: 20px; }
+  .body-text p:last-child { margin-bottom: 0; }
+
+  .body-text strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ─── INSIGHT BLOCK ─── */
+  .insight-block {
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 12px;
+    padding: 40px 48px;
+    margin: 48px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insight-block::before {
+    content: '\201C';
+    font-family: 'DM Serif Display', serif;
+    font-size: 120px;
+    color: var(--blue-light);
+    position: absolute;
+    top: -10px;
+    left: 36px;
+    line-height: 1;
+    opacity: 0.35;
+  }
+
+  .insight-block p {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(20px, 2vw, 26px);
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--white);
+    position: relative;
+    z-index: 1;
+  }
+
+  .insight-block .attribution {
+    margin-top: 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── PILLAR CARDS ─── */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 48px 0;
+  }
+
+  .pillar-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 28px;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .pillar-card:hover {
+    box-shadow: 0 8px 32px rgba(26,26,46,0.1);
+  }
+
+  .pillar-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+
+  .pillar-icon.gold { background: rgba(46,103,237,0.10); }
+  .pillar-icon.sage { background: rgba(169,72,227,0.10); }
+  .pillar-icon.rust { background: rgba(36,2,102,0.10); }
+
+  .pillar-card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .pillar-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+  }
+
+  /* ─── MARKETPLACE SECTION BACKGROUND ─── */
+  .marketplace-section {
+    background: var(--white);
+    padding: 96px 0;
+    border-top: 3px solid var(--blue);
+  }
+
+  .marketplace-section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 72px;
+  }
+
+  /* ─── ACTIVATION CALLOUT ─── */
+  .activation-banner {
+    background: linear-gradient(135deg, var(--ink) 0%, #0A1F5C 60%, #1A0A40 100%);
+    border-radius: 16px;
+    padding: 56px 64px;
+    margin: 64px 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .activation-banner::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -40px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(52,191,234,0.18), transparent 70%);
+    pointer-events: none;
+  }
+
+  .activation-banner h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .activation-banner p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    max-width: 560px;
+  }
+
+  .activation-metric {
+    text-align: center;
+    border-left: 1px solid rgba(255,255,255,0.15);
+    padding-left: 48px;
+    white-space: nowrap;
+  }
+
+  .activation-metric-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    font-weight: 400;
+    color: var(--blue-light);
+    line-height: 1;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .activation-metric-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    display: block;
+  }
+
+  /* ─── COSELL SECTION ─── */
+  .cosell-section {
+    background: var(--cream-warm);
+    padding: 96px 0;
+  }
+
+  .cosell-section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 72px;
+  }
+
+  /* ─── CAVEATS GRID ─── */
+  .caveats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 40px 0;
+  }
+
+  .caveat-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--rust);
+    border-radius: 0 10px 10px 0;
+    padding: 24px 28px;
+  }
+
+  .caveat-item h5 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 8px;
+  }
+
+  .caveat-item p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+  }
+
+  /* ─── STEPS LIST ─── */
+  .steps {
+    margin: 40px 0;
+    counter-reset: step;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+    align-items: start;
+  }
+
+  .step-number {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .step-body h5 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .step-body p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+  }
+
+  /* ─── PROOF POINT STRIP ─── */
+  .proof-strip {
+    background: var(--ink);
+    padding: 80px 0;
+  }
+
+  .proof-strip-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 72px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    align-items: center;
+  }
+
+  .proof-strip h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(24px, 2.8vw, 36px);
+    font-weight: 400;
+    color: var(--white);
+    line-height: 1.3;
+    margin-bottom: 20px;
+  }
+
+  .proof-strip h3 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .proof-strip p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.75;
+  }
+
+  .proof-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .proof-metric {
+    background: rgba(255,255,255,0.05);
+    padding: 28px 32px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .proof-metric:first-child { border-radius: 12px 0 0 0; }
+  .proof-metric:nth-child(2) { border-radius: 0 12px 0 0; }
+  .proof-metric:nth-child(3) { border-radius: 0 0 0 12px; }
+  .proof-metric:last-child { border-radius: 0 0 12px 0; }
+
+  .proof-metric-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    font-weight: 400;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .proof-metric-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+
+  /* ─── WORKSPAN PLATFORM ─── */
+  .platform-section {
+    padding: 96px 72px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 48px;
+  }
+
+  .platform-cell {
+    background: var(--white);
+    padding: 36px 32px;
+  }
+
+  .platform-cell-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 14px;
+  }
+
+  .platform-cell h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .platform-cell p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+  }
+
+  /* ─── FOOTER ─── */
+  .doc-footer {
+    background: var(--cream-warm);
+    border-top: 1px solid var(--border);
+    padding: 48px 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 100%;
+  }
+
+  .doc-footer-brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--ink);
+  }
+
+  .doc-footer-note {
+    font-size: 12px;
+    color: var(--mist);
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── ILLUSTRATION SECTION ACCENT ─── */
+  .illustration-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .illustration-caption {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mist);
+    text-align: center;
+    padding-top: 12px;
+  }
+
+  /* ─── LARGE PULL QUOTE ─── */
+  .pull-quote {
+    border-left: 3px solid var(--gold);
+    padding: 8px 0 8px 28px;
+    margin: 32px 0;
+  }
+
+  .pull-quote p {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  /* ─── TABLE OF CONTENTS (subtle) ─── */
+  .toc-bar {
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .toc-item {
+    padding: 14px 28px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    white-space: nowrap;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    cursor: default;
+  }
+
+  .toc-item.active { color: var(--gold-light); }
+  .toc-item:first-child { padding-left: 72px; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .split, .pillars, .proof-strip-inner, .proof-metrics, .caveats, .platform-grid {
+      grid-template-columns: 1fr;
+    }
+    .section, .marketplace-section-inner, .cosell-section-inner, .proof-strip-inner, .platform-section {
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+    .hero-content { padding: 40px 32px; }
+    .activation-banner { grid-template-columns: 1fr; padding: 40px 36px; }
+    .activation-metric { border-left: none; border-top: 1px solid rgba(255,255,255,0.15); padding-left: 0; padding-top: 32px; }
+    .toc-item:first-child { padding-left: 32px; }
+    .doc-footer { flex-direction: column; gap: 12px; padding: 36px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     STICKY NAV
+════════════════════════════════════════ -->
+<nav class="toc-bar">
+  <div class="toc-item active">The Opportunity</div>
+  <div class="toc-item">Marketplace</div>
+  <div class="toc-item">Seller Activation</div>
+  <div class="toc-item">Co-Sell</div>
+  <div class="toc-item">WorkSpan AI</div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section class="hero" id="opportunity">
+
+  <!-- Real generated image — loads if in same directory as brand-images/ folder -->
+  <div class="hero-image-wrap">
+    <img
+      src="brand-images/isv-cloud-doc/brand-art_Two_small_stylized_figures_stand_on_a_mo_1.png"
+      alt="Two figures overlooking a monumental aqueduct — the architecture of cloud revenue"
+      onerror="this.parentElement.style.display='none'; document.getElementById('hero-art-fallback').style.display='block';">
+  </div>
+
+  <!-- CSS fallback -->
+  <div class="hero-art" id="hero-art-fallback">
+    <div class="hero-art-inner"></div>
+    <svg class="hero-svg" viewBox="0 0 1400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- Escher-inspired aqueduct geometry -->
+      <defs>
+        <linearGradient id="water" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.15"/>
+          <stop offset="50%" stop-color="#8BA3A8" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#4A7C6F" stop-opacity="0.1"/>
+        </linearGradient>
+        <linearGradient id="arch1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3D3D6E" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#1A1A2E" stop-opacity="0.4"/>
+        </linearGradient>
+      </defs>
+      <!-- Tiered arches — right side -->
+      <path d="M 900 200 L 1380 200 L 1380 240 Q 1140 280 900 240 Z" fill="url(#arch1)" opacity="0.6"/>
+      <path d="M 750 310 L 1380 310 L 1380 355 Q 1065 395 750 355 Z" fill="url(#arch1)" opacity="0.5"/>
+      <path d="M 620 420 L 1380 420 L 1380 468 Q 1000 510 620 468 Z" fill="url(#arch1)" opacity="0.45"/>
+      <path d="M 500 535 L 1380 535 L 1380 585 Q 940 625 500 585 Z" fill="url(#arch1)" opacity="0.4"/>
+      <path d="M 380 650 L 1380 650 L 1380 700 L 380 700 Z" fill="url(#arch1)" opacity="0.35"/>
+      <!-- Water channels -->
+      <rect x="900" y="200" width="480" height="8" fill="url(#water)" rx="2"/>
+      <rect x="750" y="310" width="630" height="8" fill="url(#water)" rx="2" opacity="0.9"/>
+      <rect x="620" y="420" width="760" height="8" fill="url(#water)" rx="2" opacity="0.8"/>
+      <rect x="500" y="535" width="880" height="8" fill="url(#water)" rx="2" opacity="0.7"/>
+      <rect x="380" y="650" width="1000" height="8" fill="url(#water)" rx="2" opacity="0.6"/>
+      <!-- Vertical connectors -->
+      <rect x="895" y="200" width="6" height="110" fill="#C9A84C" opacity="0.2" rx="2"/>
+      <rect x="745" y="310" width="6" height="110" fill="#C9A84C" opacity="0.2" rx="2"/>
+      <rect x="615" y="420" width="6" height="115" fill="#C9A84C" opacity="0.2" rx="2"/>
+      <rect x="495" y="535" width="6" height="115" fill="#C9A84C" opacity="0.2" rx="2"/>
+      <!-- Tiny figure silhouettes -->
+      <circle cx="840" cy="185" r="7" fill="rgba(247,244,239,0.7)"/>
+      <rect x="836" y="192" width="8" height="18" rx="3" fill="rgba(247,244,239,0.6)"/>
+      <circle cx="870" cy="185" r="7" fill="rgba(201,168,76,0.8)"/>
+      <rect x="866" y="192" width="8" height="18" rx="3" fill="rgba(201,168,76,0.6)"/>
+      <!-- Glow from water -->
+      <ellipse cx="1140" cy="210" rx="180" ry="20" fill="#8BA3A8" opacity="0.12"/>
+      <ellipse cx="1065" cy="320" rx="200" ry="22" fill="#8BA3A8" opacity="0.1"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">ISV Cloud Segment · Strategic Brief</div>
+    <h1>Cloud is not a channel.<br><em>It's a motion.</em></h1>
+    <p class="hero-lead">The ISV cloud opportunity is real, large, and structurally underutilized. Marketplace converts committed cloud spend into software revenue. Co-sell multiplies seller reach. But neither works without operational discipline. Here is what winning actually looks like.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">30×</div>
+        <div class="hero-stat-label">Marketplace revenue growth, Boomi YoY</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">22→47%</div>
+        <div class="hero-stat-label">Win rate lift with activated co-sell</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">90%</div>
+        <div class="hero-stat-label">Partner attach rate at scale</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     PART ONE: MARKETPLACE
+════════════════════════════════════════ -->
+<div class="marketplace-section" id="marketplace">
+  <div class="marketplace-section-inner">
+
+    <div class="section-label gold">Part One · Marketplace</div>
+    <h2 class="section-title">The conveyor belt<br>your revenue team<br><em>doesn't know it needs.</em></h2>
+    <p class="section-intro">Every major cloud provider has built a marketplace. Buyers pre-commit cloud spend. Your software can draw down against that commitment. The economics are extraordinary — and almost entirely dependent on whether your sellers know how to use it.</p>
+
+    <div class="split image-right">
+      <div class="split-text">
+        <div class="body-text">
+          <p><strong>Marketplace is not a listing. It is a buying motion.</strong> When a customer pre-commits $10M to a cloud provider, that spend needs to go somewhere. Software purchases transacted through marketplace draw down against that commitment — which means procurement, legal, and finance have already approved the mechanism. The remaining question is whether your sellers know how to route a deal through it.</p>
+          <p>Most don't. Not because they're unwilling, but because no one has embedded the guidance into the moment of a deal. The buyer's champion often sits three levels removed from the CIO or CTO who controls the committed cloud budget. Helping your champion navigate that internal ask — at the right time, in the right deal — is the activation problem marketplace teams have chronically underestimated.</p>
+          <p><strong>The infrastructure exists. The GTM motion does not.</strong> ISVs that have closed this gap have achieved extraordinary results: not incremental improvement, but order-of-magnitude growth in marketplace-transacted revenue.</p>
+        </div>
+
+        <div class="pull-quote">
+          <p>"Marketplace is a motion, not a channel. Winning teams operationalize when sellers bring it in — not whether."</p>
+        </div>
+      </div>
+
+      <div class="split-visual">
+        <div class="illustration-section">
+          <div class="illustration-frame" style="background: var(--cream-warm);">
+            <img
+              src="brand-images/isv-cloud-doc/brand-art_Single_stylized_figure_in_a_long_coat_st_1.png"
+              alt="Figure overseeing conveyor — managed marketplace workflow at scale"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              style="width:100%;height:100%;object-fit:cover;">
+            <!-- CSS Art fallback: Conveyor Belt -->
+            <div class="art-fallback" style="display:none; background: var(--cream-warm); flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:40px;">
+              <svg viewBox="0 0 280 280" width="280" height="280" xmlns="http://www.w3.org/2000/svg">
+                <!-- Conveyor belt scene -->
+                <rect width="280" height="280" fill="#EDE8DF"/>
+                <!-- Belt track -->
+                <ellipse cx="140" cy="190" rx="110" ry="22" fill="none" stroke="#1A1A2E" stroke-width="2.5" opacity="0.25"/>
+                <!-- Belt surface -->
+                <rect x="30" y="168" width="220" height="22" rx="4" fill="#D4CBBF" opacity="0.6"/>
+                <!-- Packages on belt -->
+                <rect x="50" y="154" width="30" height="24" rx="3" fill="#C9A84C" opacity="0.7"/>
+                <rect x="100" y="154" width="30" height="24" rx="3" fill="#4A7C6F" opacity="0.6"/>
+                <rect x="150" y="154" width="30" height="24" rx="3" fill="#C9A84C" opacity="0.5"/>
+                <rect x="200" y="154" width="30" height="24" rx="3" fill="#8BA3A8" opacity="0.55"/>
+                <!-- Belt rollers -->
+                <circle cx="40" cy="179" r="10" fill="#1A1A2E" opacity="0.18"/>
+                <circle cx="240" cy="179" r="10" fill="#1A1A2E" opacity="0.18"/>
+                <!-- Figure silhouette — overseer -->
+                <circle cx="200" cy="90" r="14" fill="#1A1A2E" opacity="0.75"/>
+                <path d="M 188 104 Q 200 145 212 104" fill="#1A1A2E" opacity="0.65"/>
+                <!-- Arms extended -->
+                <line x1="188" y1="120" x2="165" y2="145" stroke="#1A1A2E" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+                <line x1="212" y1="120" x2="235" y2="135" stroke="#1A1A2E" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+                <!-- Motion arrows -->
+                <path d="M 60 140 L 80 140 L 75 135 M 80 140 L 75 145" stroke="#C9A84C" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+                <path d="M 110 140 L 130 140 L 125 135 M 130 140 L 125 145" stroke="#C9A84C" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+              </svg>
+            </div>
+          </div>
+          <div class="illustration-caption">Marketplace as managed motion — process over portal</div>
+        </div>
+      </div>
+    </div><!-- /split -->
+
+    <!-- How Marketplace Actually Works -->
+    <div style="margin-top: 72px;">
+      <h3 style="font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; margin-bottom: 32px; letter-spacing: -0.01em;">Three mechanics every ISV must operationalize</h3>
+
+      <div class="pillars">
+
+        <div class="pillar-card">
+          <div class="pillar-icon gold">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="#C9A84C" stroke-width="1.8"/><path d="M11 7v4l3 2" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <h4>Committed Spend Routing</h4>
+          <p>Buyers hold pre-committed cloud budgets (MACC, EDP, CUDS) that must be spent. Marketplace draws down against those commitments. Sellers who understand the buyer's budget situation can position marketplace as a procurement accelerant — bypassing months of legal and finance review.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon sage">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="4" width="6" height="6" rx="1.5" stroke="#4A7C6F" stroke-width="1.8"/><rect x="12" y="4" width="6" height="6" rx="1.5" stroke="#4A7C6F" stroke-width="1.8"/><rect x="4" y="12" width="6" height="6" rx="1.5" stroke="#4A7C6F" stroke-width="1.8"/><rect x="12" y="12" width="6" height="6" rx="1.5" stroke="#4A7C6F" stroke-width="1.8"/></svg>
+          </div>
+          <h4>Private Offer Management</h4>
+          <p>Private offers are the commercial vehicle — customized pricing and terms sent directly to a buyer via the marketplace. Managing private offer creation, approval workflows, pricing changes, and status tracking across clouds requires operational infrastructure, not manual effort.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon rust">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 17L11 5l6 12" stroke="#C4603B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 13h7" stroke="#C4603B" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <h4>Commission Neutrality</h4>
+          <p>This is the prerequisite most ISVs skip and then wonder why adoption stalls. If sellers lose quota retirement or commission when deals transact through marketplace, they will not route deals through marketplace — regardless of incentives, training, or tooling. Commission neutrality is not optional; it's table stakes.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div><!-- /marketplace-section -->
+
+
+<!-- ════════════════════════════════════════
+     SELLER ACTIVATION
+════════════════════════════════════════ -->
+<section class="section" id="seller-activation">
+
+  <div class="section-label gold">The Critical Enabler · Seller Activation</div>
+  <h2 class="section-title">The gap between listing<br>and <em>revenue</em> is your sellers.</h2>
+  <p class="section-intro">You can have a perfect marketplace listing, a competitive private offer, and a buyer ready to transact — and still lose the deal to inertia. The missing element is almost always seller activation: your reps knowing, in the moment of a deal, that marketplace is an option and exactly how to use it.</p>
+
+  <!-- Activation Banner -->
+  <div class="activation-banner">
+    <div>
+      <h3>The "B" in A+B selling</h3>
+      <p>Co-sell and marketplace only generate revenue when your sellers engage partners at the right moment, with the right pitch, in the right deals. Without embedded guidance in their workflow — in CRM, in Slack, in the tools they already use — sellers default to what they know. The partner motion never gets started. WorkSpan AI puts the "B" back in every deal that qualifies for it, automatically.</p>
+    </div>
+    <div class="activation-metric">
+      <span class="activation-metric-num">90%</span>
+      <span class="activation-metric-label">Partner attach rate<br>with activated sellers</span>
+    </div>
+  </div>
+
+  <div class="split image-left">
+    <div class="split-visual">
+      <div class="illustration-section">
+        <div class="illustration-frame">
+          <img
+            src="brand-images/isv-cloud-doc/brand-art_Single_stylized_figure_riding_a_bicycle__1.png"
+            alt="Seller in motion — confident, guided, empowered"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            style="width:100%;height:100%;object-fit:cover;">
+          <!-- CSS fallback: Bicycle -->
+          <div class="art-fallback" style="display:none; background: linear-gradient(135deg, #EDE8DF, #E0D9CE); padding: 40px;">
+            <svg viewBox="0 0 280 280" width="280" height="280" xmlns="http://www.w3.org/2000/svg">
+              <rect width="280" height="280" fill="#EDE8DF"/>
+              <!-- Bicycle wheels -->
+              <circle cx="80" cy="185" r="42" fill="none" stroke="#1A1A2E" stroke-width="2.5" opacity="0.7"/>
+              <circle cx="200" cy="185" r="42" fill="none" stroke="#1A1A2E" stroke-width="2.5" opacity="0.7"/>
+              <!-- Wheel hubs -->
+              <circle cx="80" cy="185" r="5" fill="#1A1A2E" opacity="0.5"/>
+              <circle cx="200" cy="185" r="5" fill="#1A1A2E" opacity="0.5"/>
+              <!-- Spokes -->
+              <line x1="80" y1="143" x2="80" y2="227" stroke="#1A1A2E" stroke-width="1" opacity="0.3"/>
+              <line x1="38" y1="185" x2="122" y2="185" stroke="#1A1A2E" stroke-width="1" opacity="0.3"/>
+              <line x1="50" y1="155" x2="110" y2="215" stroke="#1A1A2E" stroke-width="1" opacity="0.25"/>
+              <line x1="110" y1="155" x2="50" y2="215" stroke="#1A1A2E" stroke-width="1" opacity="0.25"/>
+              <line x1="200" y1="143" x2="200" y2="227" stroke="#1A1A2E" stroke-width="1" opacity="0.3"/>
+              <line x1="158" y1="185" x2="242" y2="185" stroke="#1A1A2E" stroke-width="1" opacity="0.3"/>
+              <!-- Frame -->
+              <path d="M 80 185 L 140 130 L 200 185" stroke="#1A1A2E" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+              <path d="M 140 130 L 140 160" stroke="#1A1A2E" stroke-width="2.8" stroke-linecap="round" opacity="0.7"/>
+              <path d="M 140 160 L 80 185" stroke="#1A1A2E" stroke-width="2.8" stroke-linecap="round" opacity="0.7"/>
+              <!-- Handlebars -->
+              <path d="M 190 130 L 210 125 M 205 120 L 215 130" stroke="#1A1A2E" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+              <!-- Rider figure -->
+              <circle cx="170" cy="105" r="13" fill="#1A1A2E" opacity="0.75"/>
+              <path d="M 162 118 L 158 155 M 162 130 L 140 130 M 178 120 L 200 130" stroke="#1A1A2E" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+              <!-- Tablet/phone in hand -->
+              <rect x="205" y="122" width="20" height="14" rx="2" fill="#C9A84C" opacity="0.8"/>
+              <rect x="207" y="124" width="16" height="10" rx="1" fill="#E8C96A" opacity="0.5"/>
+              <!-- Motion lines -->
+              <line x1="12" y1="178" x2="35" y2="178" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
+              <line x1="8" y1="188" x2="32" y2="188" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4"/>
+              <line x1="14" y1="198" x2="38" y2="198" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.3"/>
+            </svg>
+          </div>
+        </div>
+        <div class="illustration-caption">Every seller, guided — in-motion, in-deal</div>
+      </div>
+    </div>
+
+    <div class="split-text">
+      <div class="body-text">
+        <p><strong>What does seller activation actually mean?</strong> It means that when a rep is qualifying an opportunity in Salesforce, they receive a prompt: this deal has cloud consumption alignment — here is the partner contact, the co-sell value pitch, and the steps to register. Not a training deck. Not a partner manager to call. A contextual action, in the tool they're already in.</p>
+        <p>This is the delta between ISVs with 15% marketplace attach and ISVs with 90% attach. It is not about incentive structures or seller knowledge alone. It is about removing friction from the moment of decision.</p>
+        <p><strong>Activation is a three-layer problem:</strong> conceptual (sellers must understand why marketplace and co-sell matter for their deals), operational (sellers must know how to submit a referral, create a private offer, or engage a cloud seller), and motivational (sellers must not be penalized for the mechanism). Miss any layer and the motion stalls.</p>
+      </div>
+
+      <div class="steps" style="margin-top: 36px;">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-body">
+            <h5>Embed guidance in the CRM moment</h5>
+            <p>Seller activation that requires leaving the CRM will not happen at scale. Surface partner recommendations, engagement steps, and marketplace offers in Salesforce and Slack — where reps already live.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-body">
+            <h5>Match partner to deal, not deal to all partners</h5>
+            <p>Intelligent matching surfaces the right cloud or ecosystem partner for each opportunity based on customer profile, industry, size, and existing cloud footprint — not a generic list of all partners.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-body">
+            <h5>Close the attribution loop immediately</h5>
+            <p>Sellers need real-time confirmation that attaching a partner — and routing through marketplace — will not affect their commission. Attribution must be transparent and instant, not reconciled at quarter end.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<div class="section-divider"></div>
+
+
+<!-- ════════════════════════════════════════
+     PART TWO: CO-SELL
+════════════════════════════════════════ -->
+<div class="cosell-section" id="cosell">
+  <div class="cosell-section-inner">
+
+    <div class="section-label rust">Part Two · Co-Sell</div>
+    <h2 class="section-title">Real leverage.<br><em>Honest expectations.</em></h2>
+    <p class="section-intro">Co-sell with cloud providers amplifies reach, validates credibility, and — when everything aligns — doubles win rates. It also requires being honest about what co-sell actually is, what it is not, and what the conditions for success really are.</p>
+
+    <div class="split image-right" style="margin-bottom: 64px;">
+      <div class="split-text">
+        <div class="body-text">
+          <p><strong>The co-sell opportunity is structural, not transactional.</strong> When a cloud provider's field sellers recommend or co-sell your product, you gain access to their relationships, their deal intelligence, and their credibility with the buyer. Win rates nearly double: from 22% to 47% for ISVs that have achieved meaningful co-sell activation with cloud field teams.</p>
+          <p>The mechanism matters: co-sell works because cloud sellers are incented to grow cloud consumption. If your software runs on — or drives consumption of — cloud infrastructure, then selling your software advances the cloud seller's quota. That alignment is the engine. When it's strong, co-sell is a multiplier. When it's weak, co-sell is a reporting exercise.</p>
+          <p><strong>Consumption alignment is the filter.</strong> DevOps tooling, cybersecurity, AI/ML platforms, data and analytics — these naturally drive cloud consumption. Pure SaaS with minimal cloud dependency creates a weaker co-sell dynamic. Prioritize co-sell investment where the consumption story is genuine.</p>
+        </div>
+      </div>
+
+      <div class="split-visual">
+        <div class="illustration-section">
+          <div class="illustration-frame" style="background: #EDE8DF;">
+            <img
+              src="brand-images/isv-cloud-doc/brand-art_Single_stylized_figure_in_a_long_coat_st_2.png"
+              alt="Figure beside a windmill — co-sell as ambient generation when conditions align"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              style="width:100%;height:100%;object-fit:cover;">
+            <!-- CSS fallback: Windmill -->
+            <div class="art-fallback" style="display:none; background: linear-gradient(160deg, #EDE8DF, #DDD5C8); padding: 40px;">
+              <svg viewBox="0 0 280 280" width="280" height="280" xmlns="http://www.w3.org/2000/svg">
+                <rect width="280" height="280" fill="#EDE8DF"/>
+                <!-- Windmill tower -->
+                <path d="M 128 240 L 136 100 L 148 100 L 156 240 Z" fill="#1A1A2E" opacity="0.55"/>
+                <!-- Hub -->
+                <circle cx="142" cy="100" r="8" fill="#1A1A2E" opacity="0.7"/>
+                <!-- Blades — 4 geometric blades -->
+                <path d="M 142 100 L 108 60 L 118 85 Z" fill="#C9A84C" opacity="0.75"/>
+                <path d="M 142 100 L 182 66 L 158 80 Z" fill="#4A7C6F" opacity="0.65"/>
+                <path d="M 142 100 L 176 140 L 162 115 Z" fill="#C9A84C" opacity="0.6"/>
+                <path d="M 142 100 L 102 134 L 126 115 Z" fill="#8BA3A8" opacity="0.65"/>
+                <!-- Blade tips glow -->
+                <circle cx="108" cy="60" r="4" fill="#E8C96A" opacity="0.5"/>
+                <circle cx="182" cy="66" r="4" fill="#E8C96A" opacity="0.4"/>
+                <circle cx="176" cy="140" r="4" fill="#E8C96A" opacity="0.35"/>
+                <circle cx="102" cy="134" r="4" fill="#E8C96A" opacity="0.4"/>
+                <!-- Ground line -->
+                <line x1="40" y1="240" x2="240" y2="240" stroke="#1A1A2E" stroke-width="1" opacity="0.2"/>
+                <!-- Figure beside windmill -->
+                <circle cx="175" cy="200" r="11" fill="#1A1A2E" opacity="0.7"/>
+                <path d="M 168 211 L 165 237 M 182 211 L 185 237" stroke="#1A1A2E" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+                <path d="M 168 218 L 156 218" stroke="#1A1A2E" stroke-width="2.5" stroke-linecap="round" opacity="0.45"/>
+                <!-- Hand on tower -->
+                <line x1="156" y1="218" x2="152" y2="228" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                <!-- Wind lines -->
+                <path d="M 50 130 Q 70 120 90 130" stroke="#8BA3A8" stroke-width="1.5" fill="none" opacity="0.4" stroke-linecap="round"/>
+                <path d="M 45 148 Q 68 135 92 148" stroke="#8BA3A8" stroke-width="1.5" fill="none" opacity="0.3" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="illustration-caption">Co-sell — persistent when conditions align</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THE CAVEATS -->
+    <div style="margin-bottom: 64px;">
+      <div class="insight-block">
+        <p>Co-sell is not a relationship. It is a system. And like any system, it only generates output when the inputs are right. Most ISVs invest in co-sell relationships before they've established the inputs. Then they wonder why the field attention doesn't show up.</p>
+        <div class="attribution">WorkSpan AI · Cloud Marketplace GTM Playbook</div>
+      </div>
+
+      <h3 style="font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; margin-bottom: 24px; margin-top: 48px; letter-spacing: -0.01em;">The real conditions. Set them clearly.</h3>
+
+      <div class="caveats">
+
+        <div class="caveat-item">
+          <h5>Cloud seller attention is scarce</h5>
+          <p>Cloud field sellers manage hundreds of ISV relationships. Active engagement — real deal collaboration, introductions, joint calls — is reserved for partners with strong consumption alignment, referral quality scores, and a track record of closing jointly. Expect earned attention, not assumed attention. Build toward it systematically.</p>
+        </div>
+
+        <div class="caveat-item">
+          <h5>Referral quality drives recommendation scores</h5>
+          <p>Cloud co-sell portals are increasingly algorithmic. ISVs with clean data, high-quality referrals, and strong win rates surface more often in cloud seller workflows. ISVs submitting low-quality referrals — wrong stage, wrong size, no consumption story — sink in the rankings. Quality over volume, always.</p>
+        </div>
+
+        <div class="caveat-item">
+          <h5>Buyer distance is the hidden blocker</h5>
+          <p>The deal champion is often three hops away from the executive who controls committed cloud spend. Your sellers must help champions navigate that internal journey — making the ask to route through marketplace, connecting them to the IT stakeholder who manages cloud commitments. This takes enablement, not just intent.</p>
+        </div>
+
+        <div class="caveat-item">
+          <h5>Don't over-promise field collaboration</h5>
+          <p>Co-sell at its best is a multiplier. But setting expectations that cloud field sellers will proactively bring you into deals — before you've built the referral track record and consumption alignment — sets your alliance team up for disappointment and credibility loss internally. Be honest about the build phase.</p>
+        </div>
+
+      </div>
+
+      <h3 style="font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; margin-bottom: 24px; margin-top: 48px; letter-spacing:-0.01em;">What co-sell actually gives you, when you earn it</h3>
+
+      <div class="body-text">
+        <p><strong>Access to pipeline you would never find alone.</strong> Cloud sellers see buying signals — consumption spikes, architecture reviews, renewal conversations — that your reps don't. When a cloud seller brings your ISV into a deal, they're not just adding a voice; they're opening a door that was previously closed.</p>
+        <p><strong>Third-party validation at the moment of decision.</strong> A cloud provider's recommendation carries a different weight than your own sales pitch. When the account team hears that you're a preferred partner — backed by a referral from the cloud account executive — it changes the buying conversation.</p>
+        <p><strong>Compressed deal cycles.</strong> Co-sold deals move faster. The procurement friction that marketplace removes is compounded by the trust that a cloud seller's involvement creates. Together, they can cut average deal cycles by weeks.</p>
+        <p><strong>The compounding effect of referral history.</strong> Every quality co-sell referral you submit improves your recommendation score. Better scores lead to more proactive engagement from cloud sellers. This flywheel takes time to build — but once turning, it is hard for competitors to replicate.</p>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /cosell-section -->
+
+
+<!-- ════════════════════════════════════════
+     PROOF POINT
+════════════════════════════════════════ -->
+<div class="proof-strip" id="proof">
+  <div class="proof-strip-inner">
+    <div>
+      <h3>Boomi achieved <em>30× marketplace growth</em> in a single year.</h3>
+      <p>Not by listing more products. By operationalizing the motion: seller activation at scale, marketplace-first deal routing, and automated co-sell workflows that kept quality referrals flowing. The result was a flywheel that compounded across the year — not a one-quarter anomaly.</p>
+    </div>
+    <div class="proof-metrics">
+      <div class="proof-metric">
+        <div class="proof-metric-num">30×</div>
+        <div class="proof-metric-label">YoY marketplace<br>revenue growth</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-metric-num">101%</div>
+        <div class="proof-metric-label">YoY co-sell<br>ACV increase</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-metric-num">31%</div>
+        <div class="proof-metric-label">Higher NRR via<br>marketplace deals</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-metric-num">90%</div>
+        <div class="proof-metric-label">Partner attach<br>rate achieved</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     WORKSPAN AI PLATFORM
+════════════════════════════════════════ -->
+<section class="platform-section" id="workspan-ai">
+
+  <div class="section-label">WorkSpan AI · Platform</div>
+  <h2 class="section-title">The operating system<br>that runs the <em>entire motion.</em></h2>
+  <p class="section-intro">WorkSpan AI is the Partner Revenue Platform — built to operate marketplace, co-sell, and incentive motions from a single system, embedded directly in your sellers' workflows. Three pillars. One platform. Zero duct tape.</p>
+
+  <div class="platform-grid">
+    <div class="platform-cell">
+      <div class="platform-cell-label">Pillar One</div>
+      <h4>Process Automation</h4>
+      <p>API-driven synchronization of co-sell referrals across cloud portals. Automated marketplace listing management, private offer creation, and pricing updates. Incentive and MDF workflow orchestration. The "narrow channel" plumbing — done once, done right, running continuously.</p>
+    </div>
+    <div class="platform-cell">
+      <div class="platform-cell-label">Pillar Two</div>
+      <h4>Seller Activation</h4>
+      <p>AI-powered coaching embedded in CRM and Slack. Surfaces the right partner, the right engagement step, and the right proof point at the moment of a deal — without requiring sellers to call the alliance team, toggle between portals, or know the partner ecosystem by heart.</p>
+    </div>
+    <div class="platform-cell">
+      <div class="platform-cell-label">Pillar Three</div>
+      <h4>Partner Attribution</h4>
+      <p>Auditable, CFO-grade attribution that connects partner activity to revenue outcomes. Answers the question executives actually ask: what did the alliance team produce, and was it worth the investment? Real-time, not reconciled at quarter end.</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
+    <div class="body-text">
+      <p><strong>You build the partnerships. WorkSpan AI runs them.</strong> The alliance team's job is to build the relationships, negotiate the agreements, and develop the joint GTM strategy. WorkSpan AI operationalizes that strategy at scale — removing the manual coordination tax that consumes 60–80% of most alliance team capacity.</p>
+      <p>The result: alliance leaders spend time on relationship building and strategy rather than referee-ing data entry and chasing portal updates. Sellers engage partners at the right moments because AI tells them when and how. Finance gets clean attribution instead of estimated influence.</p>
+    </div>
+    <div>
+      <div style="background: var(--cream-warm); border: 1px solid var(--border); border-radius: 12px; padding: 32px;">
+        <div class="section-label sage" style="margin-bottom: 16px;">Why now</div>
+        <p style="font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; line-height: 1.4; color: var(--ink); margin-bottom: 16px; font-style: italic;">"Marketplace is accelerating the pace of business. ISVs that don't operationalize will find themselves outrun by those that do."</p>
+        <p style="font-size: 14px; line-height: 1.7; color: var(--ink-mid);">Cloud provider program changes (AWS APN v3, Microsoft New Commerce, Google Cloud partner evolution) are increasing complexity while reducing the tolerance for manual process. The cost of not automating is rising faster than the cost of doing it.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer class="doc-footer">
+  <div class="doc-footer-brand">WorkSpan AI</div>
+  <div class="doc-footer-note">ISV Cloud Segment · Marketplace & Co-Sell · Strategic Brief · 2026</div>
+</footer>
+
+<script>
+  // Scroll-based nav highlighting
+  const sections = document.querySelectorAll('[id]');
+  const navItems = document.querySelectorAll('.toc-item');
+  const sectionIds = ['opportunity','marketplace','seller-activation','cosell','workspan-ai'];
+
+  window.addEventListener('scroll', () => {
+    let current = 0;
+    sections.forEach((section, i) => {
+      if (section.getBoundingClientRect().top <= 100) current = i;
+    });
+    navItems.forEach((item, i) => {
+      item.classList.toggle('active', i === current);
+    });
+  }, { passive: true });
+
+  // Hero image error fallback
+  const heroImg = document.querySelector('.hero-image-wrap img');
+  if (heroImg && !heroImg.complete) {
+    heroImg.addEventListener('error', () => {
+      document.querySelector('.hero-image-wrap').style.display = 'none';
+      document.getElementById('hero-art-fallback').style.display = 'block';
+    });
+  } else if (heroImg && heroImg.naturalWidth === 0) {
+    document.querySelector('.hero-image-wrap').style.display = 'none';
+    document.getElementById('hero-art-fallback').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
